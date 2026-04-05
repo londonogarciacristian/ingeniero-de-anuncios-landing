@@ -3,117 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Andrómeda | Auditoría de Creativos Pro</title>
+    <title>Andrómeda OS | Ingeniero de Anuncios</title>
     <style>
-        :root { --bg: #0d0d0d; --card: #151515; --accent: #00d4ff; --danger: #ff4b2b; --warning: #f9d423; --success: #00f260; --text: #e0e0e0; }
-        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 1000px; margin: auto; }
+        :root { --bg: #080808; --side: #111; --card: #1a1a1a; --accent: #00d4ff; --danger: #ff4b2b; --warning: #f9d423; --success: #00f260; --text: #fff; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Header Estilo Auditoría */
-        .header-audit { border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
-        .header-audit h1 { font-size: 1.2rem; letter-spacing: 3px; color: var(--accent); margin: 0; }
-        .score-badge { background: var(--card); border: 1px solid #333; padding: 10px 20px; border-radius: 8px; text-align: center; }
+        /* Sidebar Estilo App */
+        .sidebar { width: 240px; background: var(--side); border-right: 1px solid #222; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+        .logo { font-weight: 900; letter-spacing: 2px; color: var(--accent); font-size: 14px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        .nav-item { padding: 10px; border-radius: 5px; cursor: pointer; font-size: 13px; color: #888; transition: 0.3s; }
+        .nav-item.active { background: #222; color: var(--accent); }
 
-        /* Zona de Carga */
-        .upload-section { border: 2px dashed #444; border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: 0.3s; background: var(--card); margin-bottom: 30px; position: relative; overflow: hidden; }
-        .upload-section:hover { border-color: var(--accent); }
-        #preview { max-width: 100%; height: 350px; object-fit: contain; display: none; margin: auto; }
-        #scan-line { position: absolute; width: 100%; height: 3px; background: var(--accent); top: 0; left: 0; display: none; box-shadow: 0 0 20px var(--accent); animation: scan 2.5s infinite; }
-        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+        /* Área Principal */
+        .main-app { flex: 1; padding: 30px; overflow-y: auto; position: relative; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        
+        /* Uploader */
+        .app-dropzone { border: 2px dashed #333; border-radius: 15px; height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0c0c0c; cursor: pointer; position: relative; transition: 0.3s; }
+        .app-dropzone:hover { border-color: var(--accent); background: #111; }
+        #preview { position: absolute; width: 100%; height: 100%; object-fit: contain; display: none; z-index: 5; }
 
-        /* Grid de Métricas Predictivas */
-        .metrics-grid { display: none; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .metric-box { background: var(--card); padding: 15px; border-radius: 8px; border: 1px solid #222; }
-        .metric-box h4 { margin: 0; font-size: 10px; text-transform: uppercase; color: #888; }
-        .metric-box p { margin: 5px 0 0; font-weight: bold; font-size: 16px; }
-        .low { color: var(--danger); } .mid { color: var(--warning); } .high { color: var(--success); }
+        /* Grid de Métricas (Igual a Claude) */
+        .metrics-app { display: none; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 25px; }
+        .metric-card { background: var(--card); border: 1px solid #333; padding: 15px; border-radius: 8px; }
+        .metric-card span { font-size: 10px; color: #666; text-transform: uppercase; display: block; margin-bottom: 5px; }
+        .metric-card strong { font-size: 15px; display: block; }
+        
+        /* Colores de Status */
+        .status-red { color: var(--danger); border-left: 3px solid var(--danger); }
+        .status-yellow { color: var(--warning); border-left: 3px solid var(--warning); }
+        .status-green { color: var(--success); border-left: 3px solid var(--success); }
 
-        /* Bloques de Diagnóstico */
-        .diagnosis-card { display: none; background: #1a1a1a; border-radius: 10px; padding: 20px; margin-bottom: 20px; border-left: 5px solid var(--danger); }
-        .diagnosis-card.success { border-left-color: var(--success); }
-        .diagnosis-card h3 { margin-top: 0; font-size: 16px; display: flex; align-items: center; gap: 10px; }
-        .fix-box { background: #000; padding: 15px; border-radius: 5px; margin-top: 10px; font-size: 13px; color: #ccc; border: 1px solid #333; }
-        .fix-box b { color: var(--accent); }
+        /* Consola de Análisis */
+        #console { display: none; background: #000; padding: 15px; border-radius: 5px; font-family: monospace; font-size: 12px; color: #00f260; margin: 20px 0; border: 1px solid #222; }
 
-        .btn-analyze { width: 100%; padding: 18px; background: var(--accent); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-bottom: 20px; }
-        .btn-wa { display: none; background: #25D366; color: white; text-decoration: none; text-align: center; padding: 18px; border-radius: 8px; font-weight: bold; }
+        .btn-app { width: 100%; padding: 15px; background: var(--accent); color: #000; border: none; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 20px; }
+        .btn-wa { display: none; background: #25D366; color: white; text-decoration: none; padding: 15px; border-radius: 8px; font-weight: bold; text-align: center; margin-top: 15px; }
+
+        @media (max-width: 768px) { .sidebar { display: none; } .metrics-app { grid-template-columns: 1fr 1fr; } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header-audit">
+<div class="sidebar">
+    <div class="logo">ANDRÓMEDA OS v4.6</div>
+    <div class="nav-item active">📊 Dashboard Auditor</div>
+    <div class="nav-item">⚙️ Settings</div>
+    <div class="nav-item">📁 Historial</div>
+</div>
+
+<div class="main-app">
+    <div class="top-bar">
         <div>
-            <h1>ANDRÓMEDA ACTIVADA</h1>
-            <p style="font-size: 10px; color: #666; margin: 0;">ESCANEANDO PÍXELES... DIAGNÓSTICO ALGORÍTMICO</p>
+            <h2 style="margin:0; font-size: 18px;">Escaneo de Pixeles</h2>
+            <p style="margin:0; font-size: 12px; color: #666;">Ingeniería de Anuncios > Auditoría</p>
         </div>
-        <div class="score-badge">
-            <span id="mainScore" style="font-size: 24px; font-weight: bold; color: var(--danger);">--</span><span style="font-size: 12px; color: #555;"> / 10</span>
+        <div style="background:#222; padding: 10px 20px; border-radius: 8px; font-weight: bold;">
+            SCORE: <span id="mainScore" style="color:var(--danger);">--</span>
         </div>
     </div>
 
-    <div class="upload-section" onclick="document.getElementById('fileInput').click()">
-        <div id="scan-line"></div>
-        <div id="upload-prompt">
-            <p style="font-size: 40px; margin: 0;">📸</p>
-            <p>Sube tu anuncio para iniciar auditoría</p>
-        </div>
-        <input type="file" id="fileInput" hidden accept="image/*" onchange="previewImage(this)">
+    <div class="app-dropzone" onclick="document.getElementById('fileInput').click()">
+        <p id="label-text">✚ ARRASTRAR CREATIVO O CLICK PARA SUBIR</p>
+        <input type="file" id="fileInput" hidden accept="image/*" onchange="loadImg(this)">
         <img id="preview">
     </div>
 
-    <button id="btnRun" class="btn-analyze" style="display:none;" onclick="startAudit()">INICIAR ANÁLISIS DE INGENIERÍA</button>
+    <button id="btnRun" class="btn-app" style="display:none;" onclick="runAppAnalysis()">INICIAR PROCESAMIENTO ALGORÍTMICO</button>
 
-    <div id="resultsArea">
-        <div class="metrics-grid" id="metricsGrid">
-            <div class="metric-box"><h4>CTR PREDICHO</h4><p class="low">0.7% - 1.1%</p></div>
-            <div class="metric-box"><h4>CARGA COGNITIVA</h4><p class="mid">MUY ALTA</p></div>
-            <div class="metric-box"><h4>CPM ESTIMADO</h4><p class="mid">COP$ 15k - 25k</p></div>
-            <div class="metric-box"><h4>PATRÓN INTERRUPCIÓN</h4><p class="low">DÉBIL</p></div>
-        </div>
+    <div id="console"></div>
 
-        <div id="diagnoses">
-            <div class="diagnosis-card" id="diag1">
-                <h3>🚫 Sobrecarga Visual Crítica</h3>
-                <p style="font-size: 13px;">El algoritmo detecta más de 5 elementos compitiendo por atención. El cerebro del usuario no sabe dónde mirar en los primeros 0.4s.</p>
-                <div class="fix-box"><b>INGENIERÍA CORRECTIVA:</b> Aplica la Regla de Ogilvy. Elimina el exceso de badges y deja que la imagen respire.</div>
-            </div>
-            <div class="diagnosis-card success" id="diag2">
-                <h3>✅ Activo Rescatable: Fotografía</h3>
-                <p style="font-size: 13px;">La calidad técnica y autenticidad de la imagen base es alta. Es un activo valioso que está siendo "ahogado" por el diseño.</p>
-                <div class="fix-box"><b>RECOMENDACIÓN:</b> Mantén la foto, pero reduce el texto al 20% del área total.</div>
-            </div>
-        </div>
+    <div class="metrics-app" id="metricsArea">
+        <div class="metric-card status-red"><span>CTR Predicho</span><strong>0.7% - 1.1%</strong></div>
+        <div class="metric-card status-yellow"><span>Carga Cognitiva</span><strong>MUY ALTA</strong></div>
+        <div class="metric-card status-yellow"><span>CPM Estimado</span><strong>PUNTAJE BAJO</strong></div>
+        <div class="metric-card status-red"><span>Patrón Interrupción</span><strong>DÉBIL</strong></div>
+        <div class="metric-card status-red"><span>Texto en Imagen</span><strong>~42% (CRÍTICO)</strong></div>
+        <div class="metric-card status-yellow"><span>ROAS Estimado</span><strong>1.2 - 1.8x</strong></div>
     </div>
 
-    <a href="https://wa.me/57TU_NUMERO?text=Hola%20Cristian,%20mi%20anuncio%20sacó%204.2/10.%20Necesito%20ingeniería." id="btnWA" class="btn-wa">CORREGIR CON UN INGENIERO DE ANUNCIOS</a>
+    <div id="verdict" style="display:none; background:#111; padding:20px; border-radius:10px; margin-top:20px; border: 1px solid #333;">
+        <h3 style="margin-top:0; color:var(--accent); font-size:14px;">DIAGNÓSTICO DEL INGENIERO:</h3>
+        <p style="font-size:13px; line-height:1.6; color:#bbb;">Sobrecarga visual detectada. Los elementos flotantes están compitiendo por la atención del usuario en menos de 0.4s. El exceso de texto penalizará tu distribución en Meta Ads.</p>
+        <a href="https://wa.me/57TU_NUMERO" class="btn-wa" id="btnWA">CORREGIR CON UN INGENIERO</a>
+    </div>
 </div>
 
 <script>
-    function previewImage(input) {
+    function loadImg(input) {
         const reader = new FileReader();
         reader.onload = function(e) {
             document.getElementById('preview').src = e.target.result;
             document.getElementById('preview').style.display = 'block';
-            document.getElementById('upload-prompt').style.display = 'none';
+            document.getElementById('label-text').style.display = 'none';
             document.getElementById('btnRun').style.display = 'block';
         }
         reader.readAsDataURL(input.files[0]);
     }
 
-    function startAudit() {
-        document.getElementById('btnRun').innerText = "PROCESANDO CAPAS NEURONALES...";
-        document.getElementById('scan-line').style.display = 'block';
+    function runAppAnalysis() {
+        const btn = document.getElementById('btnRun');
+        const cons = document.getElementById('console');
+        btn.style.display = 'none';
+        cons.style.display = 'block';
+        
+        const logs = [
+            "> Conectando con Redes Neuronales de Meta...",
+            "> Analizando jerarquía de lectura (Z-Pattern)...",
+            "> Calculando ratio de texto vs área total...",
+            "> Escaneando mapa de calor predictivo...",
+            "> GENERANDO DIAGNÓSTICO FINAL..."
+        ];
 
-        setTimeout(() => {
-            document.getElementById('scan-line').style.display = 'none';
-            document.getElementById('btnRun').style.display = 'none';
-            document.getElementById('mainScore').innerText = "4.2";
-            document.getElementById('metricsGrid').style.display = 'grid';
-            document.getElementById('diag1').style.display = 'block';
-            document.getElementById('diag2').style.display = 'block';
-            document.getElementById('btnWA').style.display = 'block';
-        }, 3000);
+        let i = 0;
+        const interval = setInterval(() => {
+            cons.innerHTML += logs[i] + "<br>";
+            i++;
+            if(i >= logs.length) {
+                clearInterval(interval);
+                showFinalResults();
+            }
+        }, 800);
+    }
+
+    function showFinalResults() {
+        document.getElementById('console').style.display = 'none';
+        document.getElementById('mainScore').innerText = "4.2 / 10";
+        document.getElementById('metricsArea').style.display = 'grid';
+        document.getElementById('verdict').style.display = 'block';
+        document.getElementById('btnWA').style.display = 'block';
     }
 </script>
 
