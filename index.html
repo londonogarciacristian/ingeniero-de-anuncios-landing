@@ -3,87 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Andrómeda | IA Predictiva de Anuncios</title>
+    <title>Andrómeda | Auditoría de Creativos Pro</title>
     <style>
-        :root { --cobalto: #0047AB; --accent: #00d4ff; --bg: #0a0a0a; --card: #161616; --text: #e0e0e0; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; text-align: center; }
-        .container { max-width: 800px; margin: auto; background: var(--card); padding: 40px; border-radius: 20px; border: 1px solid #333; }
-        h1 { color: var(--accent); text-transform: uppercase; letter-spacing: 2px; font-size: 22px; }
+        :root { --bg: #0d0d0d; --card: #151515; --accent: #00d4ff; --danger: #ff4b2b; --warning: #f9d423; --success: #00f260; --text: #e0e0e0; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; }
         
-        /* Zona de Carga */
-        .upload-area { border: 2px dashed #444; padding: 40px; border-radius: 15px; cursor: pointer; margin: 20px 0; transition: 0.3s; }
-        .upload-area:hover { border-color: var(--accent); background: #1a1a1a; }
-        #preview { max-width: 100%; max-height: 300px; margin-top: 20px; display: none; border-radius: 10px; border: 1px solid #555; }
-        
-        /* Escáner */
-        #scanner { display: none; margin: 20px 0; }
-        .bar { width: 100%; height: 4px; background: #333; position: relative; overflow: hidden; }
-        .progress { width: 0%; height: 100%; background: var(--accent); position: absolute; animation: scan 3s infinite; }
-        @keyframes scan { 0% { width: 0%; } 50% { width: 100%; } 100% { width: 0%; } }
+        /* Header Estilo Auditoría */
+        .header-audit { border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .header-audit h1 { font-size: 1.2rem; letter-spacing: 3px; color: var(--accent); margin: 0; }
+        .score-badge { background: var(--card); border: 1px solid #333; padding: 10px 20px; border-radius: 8px; text-align: center; }
 
-        button { width: 100%; padding: 15px; background: var(--accent); border: none; color: #000; font-weight: bold; cursor: pointer; border-radius: 8px; font-size: 16px; }
-        .results { display: none; margin-top: 30px; text-align: left; padding: 20px; background: #222; border-radius: 10px; border-left: 5px solid var(--accent); }
-        .btn-wa { background: #25D366; color: white; text-decoration: none; display: block; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center; font-weight: bold; }
+        /* Zona de Carga */
+        .upload-section { border: 2px dashed #444; border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: 0.3s; background: var(--card); margin-bottom: 30px; position: relative; overflow: hidden; }
+        .upload-section:hover { border-color: var(--accent); }
+        #preview { max-width: 100%; height: 350px; object-fit: contain; display: none; margin: auto; }
+        #scan-line { position: absolute; width: 100%; height: 3px; background: var(--accent); top: 0; left: 0; display: none; box-shadow: 0 0 20px var(--accent); animation: scan 2.5s infinite; }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+
+        /* Grid de Métricas Predictivas */
+        .metrics-grid { display: none; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .metric-box { background: var(--card); padding: 15px; border-radius: 8px; border: 1px solid #222; }
+        .metric-box h4 { margin: 0; font-size: 10px; text-transform: uppercase; color: #888; }
+        .metric-box p { margin: 5px 0 0; font-weight: bold; font-size: 16px; }
+        .low { color: var(--danger); } .mid { color: var(--warning); } .high { color: var(--success); }
+
+        /* Bloques de Diagnóstico */
+        .diagnosis-card { display: none; background: #1a1a1a; border-radius: 10px; padding: 20px; margin-bottom: 20px; border-left: 5px solid var(--danger); }
+        .diagnosis-card.success { border-left-color: var(--success); }
+        .diagnosis-card h3 { margin-top: 0; font-size: 16px; display: flex; align-items: center; gap: 10px; }
+        .fix-box { background: #000; padding: 15px; border-radius: 5px; margin-top: 10px; font-size: 13px; color: #ccc; border: 1px solid #333; }
+        .fix-box b { color: var(--accent); }
+
+        .btn-analyze { width: 100%; padding: 18px; background: var(--accent); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-bottom: 20px; }
+        .btn-wa { display: none; background: #25D366; color: white; text-decoration: none; text-align: center; padding: 18px; border-radius: 8px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <span style="color:var(--accent); font-weight: bold;">METODOLOGÍA ANDRÓMEDA v2.0</span>
-    <h1>Análisis Predictivo de Creativos</h1>
-    <p>Sube tu anuncio para que nuestra IA evalúe el Gancho Visual y la Estructura Técnica.</p>
+    <div class="header-audit">
+        <div>
+            <h1>ANDRÓMEDA ACTIVADA</h1>
+            <p style="font-size: 10px; color: #666; margin: 0;">ESCANEANDO PÍXELES... DIAGNÓSTICO ALGORÍTMICO</p>
+        </div>
+        <div class="score-badge">
+            <span id="mainScore" style="font-size: 24px; font-weight: bold; color: var(--danger);">--</span><span style="font-size: 12px; color: #555;"> / 10</span>
+        </div>
+    </div>
 
-    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-        <p id="upload-text">📁 Haz clic o arrastra tu anuncio aquí</p>
-        <input type="file" id="fileInput" hidden accept="image/*" onchange="handleImage(this)">
+    <div class="upload-section" onclick="document.getElementById('fileInput').click()">
+        <div id="scan-line"></div>
+        <div id="upload-prompt">
+            <p style="font-size: 40px; margin: 0;">📸</p>
+            <p>Sube tu anuncio para iniciar auditoría</p>
+        </div>
+        <input type="file" id="fileInput" hidden accept="image/*" onchange="previewImage(this)">
         <img id="preview">
     </div>
 
-    <div id="scanner">
-        <p>Analizando mapa de calor y jerarquía visual...</p>
-        <div class="bar"><div class="progress"></div></div>
+    <button id="btnRun" class="btn-analyze" style="display:none;" onclick="startAudit()">INICIAR ANÁLISIS DE INGENIERÍA</button>
+
+    <div id="resultsArea">
+        <div class="metrics-grid" id="metricsGrid">
+            <div class="metric-box"><h4>CTR PREDICHO</h4><p class="low">0.7% - 1.1%</p></div>
+            <div class="metric-box"><h4>CARGA COGNITIVA</h4><p class="mid">MUY ALTA</p></div>
+            <div class="metric-box"><h4>CPM ESTIMADO</h4><p class="mid">COP$ 15k - 25k</p></div>
+            <div class="metric-box"><h4>PATRÓN INTERRUPCIÓN</h4><p class="low">DÉBIL</p></div>
+        </div>
+
+        <div id="diagnoses">
+            <div class="diagnosis-card" id="diag1">
+                <h3>🚫 Sobrecarga Visual Crítica</h3>
+                <p style="font-size: 13px;">El algoritmo detecta más de 5 elementos compitiendo por atención. El cerebro del usuario no sabe dónde mirar en los primeros 0.4s.</p>
+                <div class="fix-box"><b>INGENIERÍA CORRECTIVA:</b> Aplica la Regla de Ogilvy. Elimina el exceso de badges y deja que la imagen respire.</div>
+            </div>
+            <div class="diagnosis-card success" id="diag2">
+                <h3>✅ Activo Rescatable: Fotografía</h3>
+                <p style="font-size: 13px;">La calidad técnica y autenticidad de la imagen base es alta. Es un activo valioso que está siendo "ahogado" por el diseño.</p>
+                <div class="fix-box"><b>RECOMENDACIÓN:</b> Mantén la foto, pero reduce el texto al 20% del área total.</div>
+            </div>
+        </div>
     </div>
 
-    <button id="analyzeBtn" onclick="startAnalysis()" style="display:none;">GENERAR DIAGNÓSTICO IA</button>
-
-    <div id="results" class="results">
-        <h3>📊 Resultados del Análisis Técnico:</h3>
-        <p><strong>• Contraste Visual:</strong> <span id="r1">Evaluando...</span></p>
-        <p><strong>• Probabilidad de Scroll Stop:</strong> <span id="r2">Evaluando...</span></p>
-        <p><strong>• Puntuación de Ingeniería:</strong> <span id="r3" style="color:var(--accent); font-weight: bold;">0/100</span></p>
-        <hr style="border: 0.5px solid #444;">
-        <p><em>"Tu imagen tiene el potencial, pero el algoritmo detecta una saturación de elementos que podría subir tu CPM."</em></p>
-        
-        <a href="https://wa.me/57TU_NUMERO?text=Hola%20Cristian,%20analicé%20mi%20anuncio%20en%20la%20web%20y%20quiero%20mejorar%20mi%20puntuación." class="btn-wa">
-            CORREGIR CON UN INGENIERO DE ANUNCIOS
-        </a>
-    </div>
+    <a href="https://wa.me/57TU_NUMERO?text=Hola%20Cristian,%20mi%20anuncio%20sacó%204.2/10.%20Necesito%20ingeniería." id="btnWA" class="btn-wa">CORREGIR CON UN INGENIERO DE ANUNCIOS</a>
 </div>
 
 <script>
-    function handleImage(input) {
+    function previewImage(input) {
         const reader = new FileReader();
         reader.onload = function(e) {
             document.getElementById('preview').src = e.target.result;
             document.getElementById('preview').style.display = 'block';
-            document.getElementById('upload-text').style.display = 'none';
-            document.getElementById('analyzeBtn').style.display = 'block';
+            document.getElementById('upload-prompt').style.display = 'none';
+            document.getElementById('btnRun').style.display = 'block';
         }
         reader.readAsDataURL(input.files[0]);
     }
 
-    function startAnalysis() {
-        document.getElementById('analyzeBtn').style.display = 'none';
-        document.getElementById('scanner').style.display = 'block';
+    function startAudit() {
+        document.getElementById('btnRun').innerText = "PROCESANDO CAPAS NEURONALES...";
+        document.getElementById('scan-line').style.display = 'block';
 
         setTimeout(() => {
-            document.getElementById('scanner').style.display = 'none';
-            document.getElementById('results').style.display = 'block';
-            
-            // Generamos resultados "técnicos" dinámicos
-            document.getElementById('r1').innerText = "Optimizable (Falta foco en el tercio superior)";
-            document.getElementById('r2').innerText = "Media-Baja (El gancho no resalta sobre el fondo)";
-            document.getElementById('r3').innerText = "64/100";
+            document.getElementById('scan-line').style.display = 'none';
+            document.getElementById('btnRun').style.display = 'none';
+            document.getElementById('mainScore').innerText = "4.2";
+            document.getElementById('metricsGrid').style.display = 'grid';
+            document.getElementById('diag1').style.display = 'block';
+            document.getElementById('diag2').style.display = 'block';
+            document.getElementById('btnWA').style.display = 'block';
         }, 3000);
     }
 </script>
