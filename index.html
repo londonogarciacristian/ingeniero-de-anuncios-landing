@@ -1,139 +1,985 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Andrómeda OS | Ingeniero de Anuncios</title>
-    <style>
-        :root { --bg: #080808; --side: #111; --card: #1a1a1a; --accent: #00d4ff; --danger: #ff4b2b; --warning: #f9d423; --success: #00f260; --text: #fff; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        
-        /* Sidebar Estilo App */
-        .sidebar { width: 240px; background: var(--side); border-right: 1px solid #222; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
-        .logo { font-weight: 900; letter-spacing: 2px; color: var(--accent); font-size: 14px; border-bottom: 1px solid #333; padding-bottom: 15px; }
-        .nav-item { padding: 10px; border-radius: 5px; cursor: pointer; font-size: 13px; color: #888; transition: 0.3s; }
-        .nav-item.active { background: #222; color: var(--accent); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ingeniero de Anuncios — Auditoría IA de Meta Ads</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#111827;--card:#1a2235;--card2:#1f2a3e;--border:#2a3a55;
+  --blue:#1877F2;--blue2:#0d5fd4;--pink:#C13584;--pink2:#E1306C;
+  --gold:#f59e0b;--text:#f0f4ff;--muted:#6b7a99;
+  --ok:#10b981;--wa:#f59e0b;--er:#ef4444;
+  --r:10px;--font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(24,119,242,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(24,119,242,.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+.glow1{position:fixed;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(24,119,242,.1),transparent 70%);top:-150px;right:-150px;pointer-events:none;z-index:0}
+.glow2{position:fixed;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(193,53,132,.08),transparent 70%);bottom:-100px;left:-100px;pointer-events:none;z-index:0}
 
-        /* Área Principal */
-        .main-app { flex: 1; padding: 30px; overflow-y: auto; position: relative; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        
-        /* Uploader */
-        .app-dropzone { border: 2px dashed #333; border-radius: 15px; height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0c0c0c; cursor: pointer; position: relative; transition: 0.3s; }
-        .app-dropzone:hover { border-color: var(--accent); background: #111; }
-        #preview { position: absolute; width: 100%; height: 100%; object-fit: contain; display: none; z-index: 5; }
+/* HEADER */
+header{position:sticky;top:0;z-index:100;padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(17,24,39,.95);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--pink));border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:#fff;font-family:var(--font)}
+.logo-name{font-size:1.1rem;font-weight:800;letter-spacing:-.02em}
+.logo-name span{background:linear-gradient(90deg,var(--blue),var(--pink2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo-badge{font-family:var(--mono);font-size:.5rem;color:var(--blue);border:1px solid rgba(24,119,242,.3);padding:3px 8px;border-radius:4px;letter-spacing:.1em;-webkit-text-fill-color:var(--blue)}
+.header-right{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.55rem;color:var(--muted)}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 6px var(--ok);animation:pulse 2s infinite}
 
-        /* Grid de Métricas (Igual a Claude) */
-        .metrics-app { display: none; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 25px; }
-        .metric-card { background: var(--card); border: 1px solid #333; padding: 15px; border-radius: 8px; }
-        .metric-card span { font-size: 10px; color: #666; text-transform: uppercase; display: block; margin-bottom: 5px; }
-        .metric-card strong { font-size: 15px; display: block; }
-        
-        /* Colores de Status */
-        .status-red { color: var(--danger); border-left: 3px solid var(--danger); }
-        .status-yellow { color: var(--warning); border-left: 3px solid var(--warning); }
-        .status-green { color: var(--success); border-left: 3px solid var(--success); }
+/* API KEY BANNER */
+.apikey-banner{background:linear-gradient(135deg,rgba(24,119,242,.12),rgba(193,53,132,.08));border:1px solid rgba(24,119,242,.25);border-radius:var(--r);padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:14px}
+.apikey-banner-icon{font-size:1.5rem;flex-shrink:0}
+.apikey-banner-text{flex:1}
+.apikey-banner-text h3{font-size:.88rem;font-weight:700;margin-bottom:4px}
+.apikey-banner-text p{font-size:.75rem;color:var(--muted);line-height:1.5}
+.apikey-input-row{display:flex;gap:8px;margin-top:10px}
+.apikey-input{flex:1;background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:10px 14px;font-family:var(--mono);font-size:.72rem;color:var(--text);outline:none;transition:border-color .2s}
+.apikey-input:focus{border-color:var(--blue)}
+.apikey-input::placeholder{color:var(--muted)}
+.apikey-save-btn{background:var(--blue);border:none;border-radius:7px;padding:10px 16px;color:#fff;font-family:var(--font);font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
+.apikey-save-btn:hover{background:var(--blue2)}
+.apikey-saved{display:none;font-family:var(--mono);font-size:.65rem;color:var(--ok);margin-top:8px}
+.apikey-saved.on{display:block}
 
-        /* Consola de Análisis */
-        #console { display: none; background: #000; padding: 15px; border-radius: 5px; font-family: monospace; font-size: 12px; color: #00f260; margin: 20px 0; border: 1px solid #222; }
+main{position:relative;z-index:1;max-width:1060px;margin:0 auto;padding:48px 32px 80px}
 
-        .btn-app { width: 100%; padding: 15px; background: var(--accent); color: #000; border: none; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 20px; }
-        .btn-wa { display: none; background: #25D366; color: white; text-decoration: none; padding: 15px; border-radius: 8px; font-weight: bold; text-align: center; margin-top: 15px; }
+/* HERO */
+.hero{text-align:center;margin-bottom:52px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.62rem;color:var(--blue);border:1px solid rgba(24,119,242,.25);background:rgba(24,119,242,.06);padding:5px 14px;border-radius:20px;margin-bottom:18px;letter-spacing:.08em}
+.hero-eyebrow::before{content:'▶';font-size:.45rem;animation:pulse 1.5s infinite}
+.hero h1{font-size:clamp(2.4rem,5vw,4.5rem);font-weight:800;line-height:1;letter-spacing:-.03em;margin-bottom:20px}
+.hero h1 .l1{display:block;color:var(--text)}
+.hero h1 .l2{display:block;background:linear-gradient(90deg,var(--blue),var(--pink2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:560px;margin:0 auto 24px}
+.hero-sub strong{color:var(--text)}
+.hero-chips{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin-bottom:32px}
+.chip{font-family:var(--mono);font-size:.56rem;padding:4px 10px;border-radius:4px;letter-spacing:.08em;font-weight:700}
+.chip-blue{background:rgba(24,119,242,.1);color:var(--blue);border:1px solid rgba(24,119,242,.2)}
+.chip-pink{background:rgba(225,48,108,.08);color:var(--pink2);border:1px solid rgba(225,48,108,.2)}
+.chip-gold{background:rgba(245,158,11,.1);color:var(--gold);border:1px solid rgba(245,158,11,.2)}
+.chip-ok{background:rgba(16,185,129,.08);color:var(--ok);border:1px solid rgba(16,185,129,.2)}
 
-        @media (max-width: 768px) { .sidebar { display: none; } .metrics-app { grid-template-columns: 1fr 1fr; } }
-    </style>
+/* FREE COUNTER */
+.free-counter{display:inline-flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(24,119,242,.1),rgba(193,53,132,.08));border:1px solid rgba(24,119,242,.25);border-radius:var(--r);padding:14px 24px;margin-bottom:32px}
+.fc-label{font-size:.82rem;color:var(--muted)}
+.fc-count{font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--blue)}
+.fc-max{font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+.fc-dots{display:flex;gap:6px}
+.fc-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--border)}
+.fc-dot.used{background:var(--pink2);border-color:var(--pink2)}
+.fc-dot.active{background:var(--blue);border-color:var(--blue);box-shadow:0 0 8px rgba(24,119,242,.5)}
+.fc-dot.empty{background:transparent}
+
+/* SECTIONS */
+.sl{font-family:var(--mono);font-size:.58rem;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:13px;display:flex;align-items:center;gap:10px}
+.sl::before{content:attr(data-n);color:var(--blue);font-weight:700}
+.sl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+
+/* TYPE */
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+.tcard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 12px;cursor:pointer;transition:all .25s;text-align:center;position:relative;overflow:hidden}
+.tcard::before{content:'';position:absolute;top:0;left:0;right:0;height:0;background:linear-gradient(90deg,var(--blue),var(--pink2));transition:height .2s}
+.tcard:hover{border-color:rgba(24,119,242,.4);transform:translateY(-2px)}
+.tcard.on{border-color:var(--blue);background:rgba(24,119,242,.05)}.tcard.on::before{height:2px}
+.ticon{font-size:1.7rem;margin-bottom:7px;display:block}
+.tname{font-weight:700;font-size:.83rem;margin-bottom:2px}
+.tdesc{font-size:.65rem;color:var(--muted)}
+
+/* CAMPAIGN */
+.cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:22px}
+.ccard{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 8px;cursor:pointer;transition:all .2s;text-align:center;font-size:.76rem;font-weight:500}
+.ccard:hover{border-color:rgba(193,53,132,.4)}
+.ccard.on{border-color:var(--pink);background:rgba(193,53,132,.06);color:var(--pink2)}
+.cicon{font-size:1.2rem;display:block;margin-bottom:4px}
+
+/* UPLOAD */
+#fileIn{display:block;width:100%;padding:28px;background:var(--card);border:2px dashed var(--border);border-radius:var(--r);font-family:var(--font);cursor:pointer;transition:all .3s;text-align:center;margin-bottom:0}
+#fileIn:hover{border-color:var(--blue);background:rgba(24,119,242,.04)}
+#fileIn::-webkit-file-upload-button{display:none}
+#fileIn::before{content:'📂  Seleccionar imagen';display:block;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:5px}
+#fileIn::after{content:'JPG · PNG · WEBP · GIF · Máx 20MB';display:block;font-size:.65rem;color:var(--muted);font-family:var(--mono)}
+.prevbox{display:none;border-radius:var(--r);overflow:hidden;border:1px solid var(--border);background:var(--card)}
+.prevbox img{width:100%;max-height:340px;object-fit:contain;display:block}
+.prevbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border)}
+.prevname{font-family:var(--mono);font-size:.6rem;color:var(--ok)}
+#fileIn2{font-family:var(--mono);font-size:.65rem;font-weight:700;color:var(--blue);background:none;border:1px solid rgba(24,119,242,.3);padding:5px 10px;border-radius:5px;cursor:pointer}
+#fileIn2::-webkit-file-upload-button{display:none}
+#fileIn2::before{content:'↺ Cambiar'}
+.cargrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}
+.cslot{border:2px dashed var(--border);border-radius:8px;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;transition:all .2s;background:var(--card);position:relative;overflow:hidden}
+.cslot:hover{border-color:var(--blue)}
+.cslot input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.cslot img{width:100%;height:100%;object-fit:cover;border-radius:6px}
+.cslot .slbl{font-size:.62rem;color:var(--muted);font-family:var(--mono);pointer-events:none}
+.cslot .sico{font-size:1.2rem;pointer-events:none}
+.crm{position:absolute;top:4px;right:4px;background:var(--er);border:none;color:#fff;border-radius:50%;width:20px;height:20px;font-size:.65rem;cursor:pointer;display:none;align-items:center;justify-content:center;font-weight:700;z-index:2}
+.cslot:hover .crm{display:flex}
+.carcnt{font-family:var(--mono);font-size:.58rem;color:var(--muted);margin-bottom:16px}
+
+/* BUDGET */
+.budget-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+.mfield{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;transition:border-color .2s}
+.mfield:focus-within{border-color:var(--blue)}
+.mfield label{display:block;font-family:var(--mono);font-size:.52rem;color:var(--muted);letter-spacing:.1em;margin-bottom:6px;text-transform:uppercase}
+.mfield input{width:100%;background:none;border:none;color:var(--text);font-size:1.5rem;font-weight:700;outline:none;letter-spacing:-.02em}
+.mfield input::placeholder{color:#2a3a55}
+.munit{font-size:.58rem;color:var(--muted);margin-top:2px;font-family:var(--mono)}
+
+.ctxbox{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:15px;margin-bottom:22px;transition:border-color .2s}
+.ctxbox:focus-within{border-color:var(--blue)}
+.ctxbox label{display:block;font-family:var(--mono);font-size:.54rem;color:var(--muted);letter-spacing:.1em;margin-bottom:8px;text-transform:uppercase}
+.ctxbox textarea{width:100%;background:none;border:none;color:var(--text);font-family:var(--font);font-size:.85rem;line-height:1.6;outline:none;resize:vertical;min-height:65px}
+.ctxbox textarea::placeholder{color:#2a3a55}
+
+/* INFO BOX */
+.info-box{background:rgba(24,119,242,.06);border:1px solid rgba(24,119,242,.15);border-radius:var(--r);padding:14px 16px;margin-bottom:22px;font-size:.8rem;color:var(--muted);display:flex;align-items:flex-start;gap:10px}
+.info-icon{font-size:1rem;flex-shrink:0;margin-top:1px}
+.info-box strong{color:var(--blue)}
+
+/* CTA BUTTON */
+.abtn{width:100%;padding:20px;background:linear-gradient(135deg,var(--blue),var(--pink));border:none;border-radius:var(--r);color:#fff;font-family:var(--font);font-size:1rem;font-weight:800;letter-spacing:.02em;cursor:pointer;transition:all .3s;position:relative;overflow:hidden;text-transform:uppercase}
+.abtn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--blue2),var(--pink2));opacity:0;transition:opacity .3s}
+.abtn:hover::before{opacity:1}
+.abtn:hover{transform:translateY(-2px);box-shadow:0 20px 50px rgba(24,119,242,.3)}
+.abtn:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+.abtn span{position:relative;z-index:1}
+
+/* LIMIT WARNING */
+.limit-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:var(--r);padding:16px;margin-bottom:16px;font-size:.82rem;color:var(--gold);display:none;text-align:center}
+.limit-warn.on{display:block}
+.limit-warn strong{display:block;font-size:.95rem;margin-bottom:4px}
+
+.errbox{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:var(--r);padding:13px 15px;margin-top:12px;font-size:.8rem;color:var(--er);display:none}
+.errbox.on{display:block}
+
+/* LOADING */
+.load{display:none;margin-top:18px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:48px 32px;text-align:center}
+.load.on{display:block}
+.lring{width:54px;height:54px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 18px}
+.ltitle{font-size:1.2rem;font-weight:800;margin-bottom:5px}
+.lsub{color:var(--muted);font-size:.78rem;margin-bottom:22px}
+.lsteps{display:flex;flex-direction:column;gap:5px;max-width:400px;margin:0 auto}
+.lsi{font-family:var(--mono);font-size:.62rem;color:var(--muted);padding:3px 0;display:flex;align-items:center;gap:8px;transition:all .3s}
+.lsi::before{content:'○';font-size:.55rem;flex-shrink:0}
+.lsi.active{color:var(--blue)}.lsi.active::before{content:'◉';animation:pulse 1s infinite}
+.lsi.done{color:var(--ok)}.lsi.done::before{content:'✓'}
+
+/* RESULTS */
+.res{display:none;margin-top:32px}
+.res.on{display:block;animation:fadeUp .5s ease both}
+.ebar{display:flex;gap:8px;justify-content:flex-end;margin-bottom:14px}
+.ebtn{display:flex;align-items:center;gap:5px;padding:7px 14px;border:1px solid var(--border);border-radius:7px;background:var(--card);color:var(--text);cursor:pointer;font-family:var(--mono);font-size:.62rem;font-weight:700;transition:all .2s}
+.ebtn:hover{border-color:var(--blue);color:var(--blue)}
+.rthumbs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.rthumb{width:68px;height:68px;border-radius:7px;border:2px solid var(--border);overflow:hidden;flex-shrink:0}
+.rthumb img{width:100%;height:100%;object-fit:cover}
+
+/* SCORE HERO */
+.shero{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:32px;display:grid;grid-template-columns:170px 1fr;gap:32px;align-items:center;margin-bottom:14px;position:relative;overflow:hidden}
+.shero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--pink2))}
+.sring{position:relative;width:170px;height:170px;flex-shrink:0}
+.sring svg{transform:rotate(-90deg)}
+.sinner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.snum{font-size:3.2rem;font-weight:800;line-height:1;letter-spacing:-.03em}
+.smax{font-family:var(--mono);font-size:.55rem;color:var(--muted)}
+.sgrade{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;margin-top:5px;padding:2px 8px;border-radius:4px}
+.gS{background:rgba(16,185,129,.15);color:var(--ok)}.gA{background:rgba(24,119,242,.1);color:var(--blue)}
+.gB{background:rgba(245,158,11,.1);color:var(--gold)}.gC{background:rgba(193,53,132,.1);color:var(--pink2)}.gD{background:rgba(239,68,68,.1);color:var(--er)}
+.sinfo h2{font-size:1.6rem;font-weight:800;letter-spacing:-.02em;margin-bottom:9px;line-height:1.1}
+.sverdict{font-size:.86rem;color:var(--muted);line-height:1.7;margin-bottom:14px}
+.stags{display:flex;gap:6px;flex-wrap:wrap}
+.stag{font-family:var(--mono);font-size:.56rem;padding:3px 8px;border-radius:4px;letter-spacing:.06em}
+.tok{background:rgba(16,185,129,.1);color:var(--ok);border:1px solid rgba(16,185,129,.2)}
+.twa{background:rgba(245,158,11,.1);color:var(--gold);border:1px solid rgba(245,158,11,.2)}
+.ter{background:rgba(239,68,68,.1);color:var(--er);border:1px solid rgba(239,68,68,.2)}
+
+/* TABS */
+.tabs{display:flex;gap:2px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:3px;margin-bottom:14px}
+.tab{flex:1;padding:9px 6px;text-align:center;border-radius:8px;cursor:pointer;font-family:var(--mono);font-size:.6rem;font-weight:700;transition:all .2s;color:var(--muted);letter-spacing:.04em}
+.tab.on{background:var(--blue);color:#fff}
+
+/* METRICS */
+.pred-header{background:linear-gradient(135deg,rgba(24,119,242,.08),rgba(193,53,132,.05));border:1px solid rgba(24,119,242,.2);border-radius:var(--r);padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.ph-icon{font-size:1.3rem}
+.ph-text h3{font-size:.88rem;font-weight:700;color:var(--blue);margin-bottom:2px}
+.ph-text p{font-size:.7rem;color:var(--muted)}
+.mrg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.mrc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;position:relative;overflow:hidden}
+.mrc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.mrc.good::after{background:var(--ok)}.mrc.warn::after{background:var(--gold)}.mrc.bad::after{background:var(--er)}.mrc.pred::after{background:var(--blue)}
+.mrcl{font-family:var(--mono);font-size:.52rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.mrcv{font-size:1.5rem;font-weight:800;letter-spacing:-.02em;margin-bottom:3px}
+.mrcb{font-size:.65rem;color:var(--muted)}
+.mrcs{font-family:var(--mono);font-size:.52rem;margin-top:7px}
+.mrc.good .mrcs{color:var(--ok)}.mrc.warn .mrcs{color:var(--gold)}.mrc.bad .mrcs{color:var(--er)}.mrc.pred .mrcs{color:var(--blue)}
+
+/* SCENARIOS */
+.scenarios{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.scenario{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px}
+.sc-label{font-family:var(--mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.sc-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.sc-actual .sc-label{color:var(--muted)}.sc-actual .sc-dot{background:var(--muted)}
+.sc-opt .sc-label{color:var(--ok)}.sc-opt .sc-dot{background:var(--ok)}
+.sc-max .sc-label{color:var(--blue)}.sc-max .sc-dot{background:var(--blue)}
+.sc-rows{display:flex;flex-direction:column;gap:7px}
+.sc-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border)}
+.sc-row:last-child{border-bottom:none}
+.sc-key{font-family:var(--mono);font-size:.58rem;color:var(--muted)}
+.sc-val{font-size:.95rem;font-weight:700;letter-spacing:-.01em}
+.sc-actual .sc-val{color:var(--text)}.sc-opt .sc-val{color:var(--ok)}.sc-max .sc-val{color:var(--blue)}
+
+/* EVAL */
+.egrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.ecard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.ecard h3{font-size:.88rem;font-weight:700;margin-bottom:14px}
+.crits{display:flex;flex-direction:column;gap:11px}
+.crow{display:flex;flex-direction:column;gap:4px}
+.crow-h{display:flex;justify-content:space-between;align-items:center}
+.crow-n{font-size:.76rem;font-weight:500}
+.crow-s{font-family:var(--mono);font-size:.65rem;font-weight:700}
+.crow-b{height:4px;background:var(--border);border-radius:3px;overflow:hidden}
+.crow-f{height:100%;border-radius:3px}
+.crow-d{font-size:.65rem;color:var(--muted);line-height:1.4}
+
+.recos-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px}
+.recos-card h3{font-size:.88rem;font-weight:700;margin-bottom:14px}
+.rlist{display:flex;flex-direction:column;gap:8px}
+.reco{display:flex;gap:11px;padding:11px 13px;border-radius:8px;font-size:.8rem;line-height:1.6}
+.reco.critical{background:rgba(239,68,68,.06);border-left:3px solid var(--er)}
+.reco.warning{background:rgba(245,158,11,.06);border-left:3px solid var(--gold)}
+.reco.success{background:rgba(16,185,129,.06);border-left:3px solid var(--ok)}
+.reco-ico{font-size:.95rem;flex-shrink:0;margin-top:2px}
+
+.acard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:14px;line-height:1.8;font-size:.84rem}
+.acard h4{font-size:.88rem;font-weight:700;color:var(--blue);margin:16px 0 7px}
+.acard h4:first-child{margin-top:0}
+.acard p{color:#8892b0;margin-bottom:7px}
+.acard ul{padding-left:18px;color:#8892b0}
+.acard li{margin-bottom:3px}
+.acard strong{color:var(--text)}
+
+.plan-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px}
+.plan-card h3{font-size:.88rem;font-weight:700;margin-bottom:16px}
+.plan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.plan-item{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px}
+.plan-week{font-family:var(--mono);font-size:.55rem;color:var(--blue);letter-spacing:.1em;margin-bottom:8px}
+.plan-action{font-size:.76rem;font-weight:500;margin-bottom:8px;line-height:1.4;color:var(--text)}
+.plan-impact{font-family:var(--mono);font-size:.62rem;color:var(--ok)}
+
+.roi-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+.roi-card h3{font-size:.88rem;font-weight:700;margin-bottom:16px}
+.roi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.roi-item{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
+.roi-label{font-family:var(--mono);font-size:.52rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.roi-value{font-size:1.3rem;font-weight:800;letter-spacing:-.02em;color:var(--blue)}
+.roi-desc{font-size:.64rem;color:var(--muted);margin-top:4px}
+
+/* UPGRADE BANNER */
+.upgrade-banner{background:linear-gradient(135deg,rgba(24,119,242,.1),rgba(193,53,132,.08));border:1px solid rgba(24,119,242,.25);border-radius:var(--r);padding:24px;text-align:center;margin-top:14px}
+.upgrade-banner h3{font-size:1.1rem;font-weight:800;margin-bottom:8px}
+.upgrade-banner p{color:var(--muted);font-size:.82rem;margin-bottom:16px}
+.upgrade-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--blue),var(--pink));border:none;border-radius:8px;padding:12px 24px;color:#fff;font-family:var(--font);font-size:.88rem;font-weight:700;cursor:pointer;transition:all .2s}
+.upgrade-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(24,119,242,.3)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:700px){
+  main{padding:24px 14px 60px}header{padding:0 14px}.logo-badge{display:none}
+  .mrg{grid-template-columns:1fr 1fr}.scenarios{grid-template-columns:1fr}
+  .egrid{grid-template-columns:1fr}.plan-grid{grid-template-columns:1fr 1fr}
+  .roi-grid{grid-template-columns:1fr 1fr}.budget-row{grid-template-columns:1fr}
+  .shero{grid-template-columns:1fr;text-align:center;gap:16px}.sring{margin:0 auto}.stags{justify-content:center}
+  .cgrid{grid-template-columns:1fr 1fr}.tgrid{grid-template-columns:repeat(3,1fr)}
+}
+</style>
 </head>
 <body>
+<div class="glow1"></div><div class="glow2"></div>
 
-<div class="sidebar">
-    <div class="logo">ANDRÓMEDA OS v4.6</div>
-    <div class="nav-item active">📊 Dashboard Auditor</div>
-    <div class="nav-item">⚙️ Settings</div>
-    <div class="nav-item">📁 Historial</div>
-</div>
+<header>
+  <div class="logo">
+    <div class="logo-icon">IA</div>
+    <div class="logo-name"><span>Ingeniero</span> de Anuncios</div>
+    <div class="logo-badge">META ADS IA</div>
+  </div>
+  <div class="header-right"><div class="sdot"></div>GEM · ANDRÓMEDA · META 2025</div>
+</header>
 
-<div class="main-app">
-    <div class="top-bar">
-        <div>
-            <h2 style="margin:0; font-size: 18px;">Escaneo de Pixeles</h2>
-            <p style="margin:0; font-size: 12px; color: #666;">Ingeniería de Anuncios > Auditoría</p>
+<main>
+  <!-- API KEY -->
+  <div class="apikey-banner" id="apikeyBanner">
+    <span class="apikey-banner-icon">🔑</span>
+    <div class="apikey-banner-text">
+      <h3>Ingresa tu API Key de Anthropic</h3>
+      <p>Necesitas una API key para usar el análisis IA. Obtén una gratis en <strong>console.anthropic.com</strong> — tus datos son privados y nunca se guardan.</p>
+      <div class="apikey-input-row">
+        <input type="password" id="apikeyInput" class="apikey-input" placeholder="sk-ant-api03-...">
+        <button class="apikey-save-btn" onclick="saveKey()">Guardar y usar</button>
+      </div>
+      <div class="apikey-saved" id="apikeySaved">✓ API Key guardada — lista para analizar</div>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">Sistema de Auditoría IA · Metodología Andromeda</div>
+    <h1>
+      <span class="l1">INGENIERO DE</span>
+      <span class="l2">ANUNCIOS</span>
+    </h1>
+    <p class="hero-sub">Audita tus creativos de Meta Ads con nuestra IA entrenada en la metodología Andromeda. <strong>Prueba gratis hasta 3 imágenes.</strong></p>
+    <div class="hero-chips">
+      <span class="chip chip-blue">✦ Framework GEM</span>
+      <span class="chip chip-pink">◈ Metodología Andrómeda</span>
+      <span class="chip chip-gold">⬡ Meta Ads 2025</span>
+      <span class="chip chip-ok">📈 IA Predictiva</span>
+    </div>
+
+    <!-- FREE COUNTER -->
+    <div class="free-counter">
+      <div>
+        <div class="fc-label">Auditorías gratuitas</div>
+      </div>
+      <div class="fc-dots" id="fcDots">
+        <div class="fc-dot active"></div>
+        <div class="fc-dot empty"></div>
+        <div class="fc-dot empty"></div>
+      </div>
+      <div>
+        <span class="fc-count" id="fcCount">3</span>
+        <span class="fc-max"> restantes</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIPO -->
+  <div class="sl" data-n="01">Tipo de Creativo</div>
+  <div class="tgrid" id="tipos">
+    <div class="tcard on" onclick="selT(this,'imagen')"><span class="ticon">🖼️</span><div class="tname">Imagen</div><div class="tdesc">JPG, PNG, WEBP</div></div>
+    <div class="tcard" onclick="selT(this,'video')"><span class="ticon">🎬</span><div class="tname">Video</div><div class="tdesc">MP4, MOV, corto o largo</div></div>
+    <div class="tcard" onclick="selT(this,'carrusel')"><span class="ticon">🎠</span><div class="tname">Carrusel</div><div class="tdesc">Hasta 4 tarjetas</div></div>
+  </div>
+
+  <!-- OBJETIVO -->
+  <div class="sl" data-n="02">Objetivo de Campaña</div>
+  <div class="cgrid" id="camps">
+    <div class="ccard on" onclick="selC(this,'mensajes')"><span class="cicon">💬</span>Mensajes</div>
+    <div class="ccard" onclick="selC(this,'ventas')"><span class="cicon">🛒</span>Ventas</div>
+    <div class="ccard" onclick="selC(this,'trafico')"><span class="cicon">🔗</span>Tráfico</div>
+    <div class="ccard" onclick="selC(this,'interaccion')"><span class="cicon">❤️</span>Interacción</div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div class="sl" data-n="03">Subir Creativo</div>
+
+  <!-- IMAGEN -->
+  <div id="zsingle" style="margin-bottom:22px">
+    <input type="file" id="fileIn" accept="image/*" onchange="loadImg(event,'main')">
+    <div class="prevbox" id="prevbox">
+      <img id="previmg" src="" alt="">
+      <div class="prevbar">
+        <span class="prevname" id="prevname"></span>
+        <input type="file" id="fileIn2" accept="image/*" onchange="loadImg(event,'main')">
+      </div>
+    </div>
+  </div>
+
+  <!-- VIDEO -->
+  <div id="zvideo" style="display:none;margin-bottom:22px">
+    <input type="file" id="videoIn" accept="video/*" onchange="loadVideo(event)">
+    <div class="prevbox" id="videoprevbox">
+      <video id="videoEl" style="width:100%;max-height:320px;display:block;background:#000" controls playsinline></video>
+      <div class="prevbar">
+        <span class="prevname" id="videoprevname"></span>
+        <input type="file" id="videoIn2" accept="video/*" onchange="loadVideo(event)">
+      </div>
+    </div>
+    <!-- FRAME EXTRACTION STATUS -->
+    <div id="frameStatus" style="display:none;margin-top:10px;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px">
+      <div style="font-family:var(--mono);font-size:.6rem;color:var(--blue);margin-bottom:8px;letter-spacing:.08em">⚙ EXTRAYENDO FRAMES DEL VIDEO</div>
+      <div id="frameProgress" style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:8px">
+        <div id="frameBar" style="height:100%;background:linear-gradient(90deg,var(--blue),var(--pink2));width:0%;transition:width .3s;border-radius:2px"></div>
+      </div>
+      <div id="frameInfo" style="font-size:.72rem;color:var(--muted)">Procesando video...</div>
+      <div id="frameThumbs" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px"></div>
+    </div>
+    <!-- VIDEO STATS -->
+    <div id="videoStats" style="display:none;margin-top:10px;display:none">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-family:var(--mono);font-size:.5rem;color:var(--muted);margin-bottom:4px">DURACIÓN</div>
+          <div style="font-size:1.1rem;font-weight:700" id="vDuration">--</div>
         </div>
-        <div style="background:#222; padding: 10px 20px; border-radius: 8px; font-weight: bold;">
-            SCORE: <span id="mainScore" style="color:var(--danger);">--</span>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-family:var(--mono);font-size:.5rem;color:var(--muted);margin-bottom:4px">FRAMES</div>
+          <div style="font-size:1.1rem;font-weight:700;color:var(--blue)" id="vFrames">--</div>
         </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-family:var(--mono);font-size:.5rem;color:var(--muted);margin-bottom:4px">FORMATO</div>
+          <div style="font-size:1.1rem;font-weight:700;color:var(--ok)" id="vFormat">--</div>
+        </div>
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-family:var(--mono);font-size:.5rem;color:var(--muted);margin-bottom:4px">TAMAÑO</div>
+          <div style="font-size:1.1rem;font-weight:700" id="vSize">--</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARRUSEL -->
+  <div id="zcar" style="display:none;margin-bottom:22px">
+    <div class="cargrid" id="cargrid"></div>
+    <div class="carcnt" id="carcnt">0 / 4 · Toca cada slot para subir</div>
+  </div>
+
+  <!-- CONTEXTO -->
+  <div class="sl" data-n="04">Contexto (mejora la predicción)</div>
+  <div class="budget-row">
+    <div class="mfield">
+      <label>Presupuesto Diario</label>
+      <input type="number" id="budget" placeholder="50" step="1">
+      <div class="munit">$ — predice alcance e impresiones</div>
+    </div>
+    <div class="mfield">
+      <label>Precio del Producto</label>
+      <input type="number" id="ticket" placeholder="49" step="1">
+      <div class="munit">$ — calcula ROAS y ROI reales</div>
+    </div>
+  </div>
+  <div class="ctxbox">
+    <label>Contexto adicional del anuncio</label>
+    <textarea id="ctx" placeholder="Ej: Crema facial premium, mujeres 30-50 años, competencia alta, público frío, primer creativo de la campaña..."></textarea>
+  </div>
+
+  <div class="info-box">
+    <span class="info-icon">🤖</span>
+    <span><strong>La IA predice todas tus métricas automáticamente</strong> — CTR, CPC, CPM, CPA, ROAS, ROI, Costo/Mensaje, Engagement, Alcance e Impresiones basándose en el análisis visual de tu creativo.</span>
+  </div>
+
+  <!-- LIMIT WARNING -->
+  <div class="limit-warn" id="limitWarn">
+    <strong>⚠️ Has usado tus 3 auditorías gratuitas</strong>
+    Actualiza al plan Pro para auditorías ilimitadas con análisis forense completo.
+  </div>
+
+  <button class="abtn" id="abtn" onclick="run()">
+    <span>⚡ AUDITAR MIS 3 IMÁGENES GRATIS</span>
+  </button>
+  <div class="errbox" id="errbox"></div>
+
+  <!-- LOADING -->
+  <div class="load" id="load">
+    <div class="lring"></div>
+    <div class="ltitle">AUDITANDO CREATIVO</div>
+    <div class="lsub">IA analizando visualmente y prediciendo métricas de Meta Ads</div>
+    <div class="lsteps">
+      <div class="lsi" id="s1">Procesando imagen con visión IA</div>
+      <div class="lsi" id="s2">Evaluando hook, composición y elementos clave</div>
+      <div class="lsi" id="s3">Aplicando framework GEM 2025</div>
+      <div class="lsi" id="s4">Evaluando metodología Andrómeda</div>
+      <div class="lsi" id="s5">Prediciendo CTR, CPC, CPM, CPA...</div>
+      <div class="lsi" id="s6">Calculando ROAS, ROI, Costo/Mensaje...</div>
+      <div class="lsi" id="s7">Generando escenarios y plan de optimización</div>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="res" id="res">
+    <div class="ebar">
+      <button class="ebtn" onclick="copyR()">📋 Copiar reporte</button>
+      <button class="ebtn" onclick="doReset()">↺ Nueva auditoría</button>
+    </div>
+    <div class="rthumbs" id="rthumbs"></div>
+
+    <div class="shero">
+      <div class="sring">
+        <svg width="170" height="170" viewBox="0 0 170 170">
+          <circle cx="85" cy="85" r="73" fill="none" stroke="#2a3a55" stroke-width="11"/>
+          <circle id="sarc" cx="85" cy="85" r="73" fill="none" stroke="url(#sg)" stroke-width="11"
+            stroke-linecap="round" stroke-dasharray="459" stroke-dashoffset="459"
+            style="transition:stroke-dashoffset 1.8s cubic-bezier(.34,1.56,.64,1)"/>
+          <defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#1877F2"/><stop offset="100%" stop-color="#E1306C"/>
+          </linearGradient></defs>
+        </svg>
+        <div class="sinner">
+          <div class="snum" id="snum">--</div>
+          <div class="smax">/ 100</div>
+          <div class="sgrade" id="sgrade"></div>
+        </div>
+      </div>
+      <div class="sinfo">
+        <h2 id="stitle"></h2>
+        <div class="sverdict" id="sverdict"></div>
+        <div class="stags" id="stags"></div>
+      </div>
     </div>
 
-    <div class="app-dropzone" onclick="document.getElementById('fileInput').click()">
-        <p id="label-text">✚ ARRASTRAR CREATIVO O CLICK PARA SUBIR</p>
-        <input type="file" id="fileInput" hidden accept="image/*" onchange="loadImg(this)">
-        <img id="preview">
+    <div class="tabs">
+      <div class="tab on" onclick="stab(this,'tm')">📊 MÉTRICAS</div>
+      <div class="tab" onclick="stab(this,'tc')">🎨 CREATIVIDAD</div>
+      <div class="tab" onclick="stab(this,'ta')">🧠 ANÁLISIS</div>
+      <div class="tab" onclick="stab(this,'tp')">🔮 PREDICCIÓN</div>
     </div>
 
-    <button id="btnRun" class="btn-app" style="display:none;" onclick="runAppAnalysis()">INICIAR PROCESAMIENTO ALGORÍTMICO</button>
-
-    <div id="console"></div>
-
-    <div class="metrics-app" id="metricsArea">
-        <div class="metric-card status-red"><span>CTR Predicho</span><strong>0.7% - 1.1%</strong></div>
-        <div class="metric-card status-yellow"><span>Carga Cognitiva</span><strong>MUY ALTA</strong></div>
-        <div class="metric-card status-yellow"><span>CPM Estimado</span><strong>PUNTAJE BAJO</strong></div>
-        <div class="metric-card status-red"><span>Patrón Interrupción</span><strong>DÉBIL</strong></div>
-        <div class="metric-card status-red"><span>Texto en Imagen</span><strong>~42% (CRÍTICO)</strong></div>
-        <div class="metric-card status-yellow"><span>ROAS Estimado</span><strong>1.2 - 1.8x</strong></div>
+    <div id="tm">
+      <div class="pred-header">
+        <span class="ph-icon">🤖</span>
+        <div class="ph-text">
+          <h3>MÉTRICAS PREDICHAS POR IA</h3>
+          <p>Basadas en análisis visual + benchmarks Meta Ads 2025</p>
+        </div>
+      </div>
+      <div class="mrg" id="mrg"></div>
     </div>
 
-    <div id="verdict" style="display:none; background:#111; padding:20px; border-radius:10px; margin-top:20px; border: 1px solid #333;">
-        <h3 style="margin-top:0; color:var(--accent); font-size:14px;">DIAGNÓSTICO DEL INGENIERO:</h3>
-        <p style="font-size:13px; line-height:1.6; color:#bbb;">Sobrecarga visual detectada. Los elementos flotantes están compitiendo por la atención del usuario en menos de 0.4s. El exceso de texto penalizará tu distribución en Meta Ads.</p>
-        <a href="https://wa.me/57TU_NUMERO" class="btn-wa" id="btnWA">CORREGIR CON UN INGENIERO</a>
+    <div id="tc" style="display:none">
+      <div class="egrid">
+        <div class="ecard"><h3>🎯 Score GEM 2025</h3><div class="crits" id="gemcrits"></div></div>
+        <div class="ecard"><h3>🌌 Score Andrómeda</h3><div class="crits" id="androcrits"></div></div>
+      </div>
+      <div class="recos-card"><h3>⚡ RECOMENDACIONES PRIORITARIAS</h3><div class="rlist" id="rlist"></div></div>
     </div>
-</div>
+
+    <div id="ta" style="display:none"><div class="acard" id="acard"></div></div>
+
+    <div id="tp" style="display:none">
+      <div class="scenarios" id="scenarios"></div>
+      <div class="plan-card"><h3>📅 PLAN DE ACCIÓN SEMANAL</h3><div class="plan-grid" id="planGrid"></div></div>
+      <div class="roi-card"><h3>💰 IMPACTO FINANCIERO ESTIMADO</h3><div class="roi-grid" id="roiGrid"></div></div>
+    </div>
+
+    <!-- UPGRADE -->
+    <div class="upgrade-banner" id="upgradeBanner" style="display:none">
+      <h3>🚀 ¿Quieres más auditorías?</h3>
+      <p>Actualiza al plan Pro: análisis forense ilimitado, score de conversión avanzado, predicción de métricas y 3 cambios de reingeniería por anuncio.</p>
+      <!-- ENLACE AL PLAN PRO AQUÍ -->
+      <button class="upgrade-btn">⚡ Ver Plan Pro — Auditorías Ilimitadas</button>
+    </div>
+  </div>
+</main>
 
 <script>
-    function loadImg(input) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('preview').src = e.target.result;
-            document.getElementById('preview').style.display = 'block';
-            document.getElementById('label-text').style.display = 'none';
-            document.getElementById('btnRun').style.display = 'block';
-        }
-        reader.readAsDataURL(input.files[0]);
-    }
+let T='imagen',C='mensajes',mainImg=null,carImgs=[null,null,null,null];
+let videoFrames=[]; // extracted frames from video
+let videoDuration=0, videoFile=null;
+let usedCount=parseInt(localStorage.getItem('adra_used')||'0');
+let apiKey=localStorage.getItem('adra_key')||'';
+const MAX_FREE=3;
 
-    function runAppAnalysis() {
-        const btn = document.getElementById('btnRun');
-        const cons = document.getElementById('console');
-        btn.style.display = 'none';
-        cons.style.display = 'block';
-        
-        const logs = [
-            "> Conectando con Redes Neuronales de Meta...",
-            "> Analizando jerarquía de lectura (Z-Pattern)...",
-            "> Calculando ratio de texto vs área total...",
-            "> Escaneando mapa de calor predictivo...",
-            "> GENERANDO DIAGNÓSTICO FINAL..."
-        ];
+window.onload=function(){
+  updateCounter();
+  if(apiKey)document.getElementById('apikeyBanner').style.display='none';
+  if(usedCount>=MAX_FREE){document.getElementById('abtn').disabled=true;document.getElementById('limitWarn').classList.add('on');}
+};
 
-        let i = 0;
-        const interval = setInterval(() => {
-            cons.innerHTML += logs[i] + "<br>";
-            i++;
-            if(i >= logs.length) {
-                clearInterval(interval);
-                showFinalResults();
-            }
-        }, 800);
-    }
+function saveKey(){
+  const k=document.getElementById('apikeyInput').value.trim();
+  if(!k.startsWith('sk-ant-')){showErr('API key inválida. Debe empezar con sk-ant-');return;}
+  apiKey=k;localStorage.setItem('adra_key',k);
+  document.getElementById('apikeySaved').classList.add('on');
+  setTimeout(()=>{document.getElementById('apikeyBanner').style.display='none';},1000);
+}
 
-    function showFinalResults() {
-        document.getElementById('console').style.display = 'none';
-        document.getElementById('mainScore').innerText = "4.2 / 10";
-        document.getElementById('metricsArea').style.display = 'grid';
-        document.getElementById('verdict').style.display = 'block';
-        document.getElementById('btnWA').style.display = 'block';
-    }
+function updateCounter(){
+  const remaining=Math.max(0,MAX_FREE-usedCount);
+  document.getElementById('fcCount').textContent=remaining;
+  const dots=document.getElementById('fcDots');dots.innerHTML='';
+  for(let i=0;i<MAX_FREE;i++){const d=document.createElement('div');d.className='fc-dot '+(i<usedCount?'used':i===usedCount?'active':'empty');dots.appendChild(d);}
+  if(usedCount>=MAX_FREE){document.getElementById('abtn').disabled=true;document.getElementById('limitWarn').classList.add('on');document.getElementById('abtn').querySelector('span').textContent='LÍMITE GRATUITO ALCANZADO';}
+}
+
+function selT(el,t){
+  document.querySelectorAll('#tipos .tcard').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');T=t;
+  document.getElementById('zsingle').style.display=t==='imagen'?'block':'none';
+  document.getElementById('zvideo').style.display=t==='video'?'block':'none';
+  document.getElementById('zcar').style.display=t==='carrusel'?'block':'none';
+  if(t==='carrusel')buildCar();
+  // reset video
+  if(t!=='video'){videoFrames=[];videoDuration=0;videoFile=null;}
+}
+
+function selC(el,c){document.querySelectorAll('#camps .ccard').forEach(b=>b.classList.remove('on'));el.classList.add('on');C=c;}
+function stab(el,id){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');['tm','tc','ta','tp'].forEach(x=>document.getElementById(x).style.display=x===id?'block':'none');}
+
+// IMAGE LOAD
+function loadImg(e,slot){
+  const f=e.target.files[0];if(!f)return;
+  if(!f.type.startsWith('image/')){showErr('Solo imágenes JPG, PNG, WEBP, GIF');return;}
+  if(f.size>20*1024*1024){showErr('Máximo 20MB');return;}
+  const r=new FileReader();
+  r.onload=ev=>{
+    const url=ev.target.result,b64=url.split(',')[1],mime=f.type;
+    if(slot==='main'){
+      mainImg={b64,mime,url,name:f.name};
+      document.getElementById('fileIn').style.display='none';
+      document.getElementById('prevbox').style.display='block';
+      document.getElementById('previmg').src=url;
+      document.getElementById('prevname').textContent='✓ '+f.name;
+    }else{carImgs[parseInt(slot)]={b64,mime,url,name:f.name};updateCar();}
+    hideErr();
+  };
+  r.readAsDataURL(f);e.target.value='';
+}
+
+// VIDEO LOAD & FRAME EXTRACTION
+function loadVideo(e){
+  const f=e.target.files[0];if(!f)return;
+  if(!f.type.startsWith('video/')){showErr('Solo videos MP4, MOV, AVI, WEBM');return;}
+  if(f.size>500*1024*1024){showErr('Máximo 500MB para video');return;}
+  videoFile=f;
+  const url=URL.createObjectURL(f);
+  const videoEl=document.getElementById('videoEl');
+  videoEl.src=url;
+  document.getElementById('videoIn').style.display='none';
+  document.getElementById('videoprevbox').style.display='block';
+  document.getElementById('videoprevname').textContent='✓ '+f.name;
+  document.getElementById('vFormat').textContent=f.type.split('/')[1].toUpperCase();
+  document.getElementById('vSize').textContent=(f.size/1024/1024).toFixed(1)+'MB';
+  videoEl.onloadedmetadata=()=>{
+    videoDuration=videoEl.duration;
+    document.getElementById('vDuration').textContent=formatTime(videoDuration);
+    document.getElementById('videoStats').style.display='grid';
+    extractFrames(videoEl,videoDuration,f.name);
+  };
+  hideErr();e.target.value='';
+}
+
+function formatTime(s){
+  if(s<60)return Math.round(s)+'s';
+  return Math.floor(s/60)+'m '+Math.round(s%60)+'s';
+}
+
+async function extractFrames(videoEl,duration,name){
+  const statusEl=document.getElementById('frameStatus');
+  const barEl=document.getElementById('frameBar');
+  const infoEl=document.getElementById('frameInfo');
+  const thumbsEl=document.getElementById('frameThumbs');
+  statusEl.style.display='block';
+  thumbsEl.innerHTML='';
+  videoFrames=[];
+
+  // Determine frame timestamps based on video length
+  // Short (<30s): every 3s + hook(0s,1s,2s,3s)
+  // Medium (30-120s): every 10s + hook
+  // Long (>120s): every 20s + hook + key moments
+  let timestamps=[];
+  // Always capture hook frames
+  const hookFrames=[0, Math.min(1,duration*.05), Math.min(2,duration*.1), Math.min(3,duration*.15)];
+  hookFrames.forEach(t=>{if(t<duration)timestamps.push(t);});
+
+  let interval = duration<=30?3:duration<=120?10:20;
+  for(let t=interval;t<duration;t+=interval){
+    if(!timestamps.includes(t))timestamps.push(t);
+  }
+  // Add end frame
+  timestamps.push(Math.max(0,duration-0.5));
+  timestamps=[...new Set(timestamps)].sort((a,b)=>a-b);
+  // Cap at 12 frames for API efficiency
+  if(timestamps.length>12){
+    const step=Math.floor(timestamps.length/12);
+    timestamps=[timestamps[0],...timestamps.filter((_,i)=>i%step===0&&i>0),timestamps[timestamps.length-1]];
+    timestamps=[...new Set(timestamps)].slice(0,12);
+  }
+
+  document.getElementById('vFrames').textContent=timestamps.length+' frames';
+  infoEl.textContent=`Extrayendo ${timestamps.length} frames clave del video...`;
+
+  const canvas=document.createElement('canvas');
+  const ctx2d=canvas.getContext('2d');
+
+  for(let i=0;i<timestamps.length;i++){
+    const t=timestamps[i];
+    barEl.style.width=((i+1)/timestamps.length*100)+'%';
+    infoEl.textContent=`Frame ${i+1}/${timestamps.length} · ${formatTime(t)}`;
+
+    await new Promise(resolve=>{
+      videoEl.currentTime=t;
+      videoEl.onseeked=()=>{
+        canvas.width=videoEl.videoWidth||640;
+        canvas.height=videoEl.videoHeight||360;
+        ctx2d.drawImage(videoEl,0,0,canvas.width,canvas.height);
+        const dataUrl=canvas.toDataURL('image/jpeg',0.7);
+        const b64=dataUrl.split(',')[1];
+        const label=i<4?`Hook ${formatTime(t)}`:`${formatTime(t)}`;
+        videoFrames.push({b64,mime:'image/jpeg',url:dataUrl,time:t,label,isHook:i<4});
+
+        // Show thumbnail
+        const thumb=document.createElement('div');
+        thumb.style.cssText='position:relative;flex-shrink:0';
+        thumb.innerHTML=`<img src="${dataUrl}" style="width:60px;height:40px;object-fit:cover;border-radius:4px;border:1px solid var(--border)">
+          <div style="position:absolute;bottom:2px;left:2px;background:rgba(0,0,0,.7);color:#fff;font-size:.45rem;padding:1px 3px;border-radius:2px;font-family:var(--mono)">${label}</div>`;
+        thumbsEl.appendChild(thumb);
+        resolve();
+      };
+    });
+    await new Promise(r=>setTimeout(r,50));
+  }
+
+  barEl.style.width='100%';
+  infoEl.innerHTML=`<span style="color:var(--ok)">✓ ${videoFrames.length} frames extraídos — listo para analizar</span>`;
+}
+
+// CAROUSEL
+function buildCar(){const g=document.getElementById('cargrid');g.innerHTML='';for(let i=0;i<4;i++){const s=document.createElement('div');s.className='cslot';s.id='cs'+i;s.innerHTML=`<input type="file" accept="image/*" onchange="loadImg(event,'${i}')"><span class="sico">📷</span><span class="slbl">Tarjeta ${i+1}</span>`;g.appendChild(s);}updateCar();}
+function updateCar(){let c=0;for(let i=0;i<4;i++){const s=document.getElementById('cs'+i);if(!s)continue;if(carImgs[i]){c++;s.innerHTML=`<input type="file" accept="image/*" onchange="loadImg(event,'${i}')"><img src="${carImgs[i].url}"><button class="crm" onclick="rmCar(${i},event)">✕</button>`;}else{s.innerHTML=`<input type="file" accept="image/*" onchange="loadImg(event,'${i}')"><span class="sico">📷</span><span class="slbl">Tarjeta ${i+1}</span>`;}}document.getElementById('carcnt').textContent=c+' / 4 · Toca para subir';}
+function rmCar(i,e){e.stopPropagation();carImgs[i]=null;updateCar();}
+function showErr(m){const b=document.getElementById('errbox');b.textContent='⚠ '+m;b.classList.add('on');}
+function hideErr(){document.getElementById('errbox').classList.remove('on');}
+
+async function run(){
+  hideErr();
+  if(!apiKey){showErr('Ingresa tu API key de Anthropic primero');document.getElementById('apikeyBanner').style.display='block';return;}
+  if(usedCount>=MAX_FREE){showErr('Has alcanzado el límite gratuito de 3 auditorías');return;}
+
+  let imgs=[];
+  let isVideo=false;
+  let videoMeta={};
+
+  if(T==='video'){
+    if(!videoFrames.length){showErr('Sube un video y espera a que se extraigan los frames');return;}
+    imgs=videoFrames;
+    isVideo=true;
+    videoMeta={duration:videoDuration,durationStr:formatTime(videoDuration),frameCount:videoFrames.length,fileName:videoFile?.name||'video'};
+  } else if(T==='carrusel'){
+    imgs=carImgs.filter(Boolean);
+    if(!imgs.length){showErr('Agrega al menos 1 imagen al carrusel');return;}
+  } else {
+    if(!mainImg){showErr('Sube una imagen para analizar');return;}
+    imgs=[mainImg];
+  }
+
+  const btn=document.getElementById('abtn');btn.disabled=true;
+  document.getElementById('load').classList.add('on');
+  document.getElementById('res').classList.remove('on');
+  const steps=['s1','s2','s3','s4','s5','s6','s7'];
+  for(let i=0;i<7;i++){await new Promise(r=>setTimeout(r,450));if(i>0){document.getElementById(steps[i-1]).classList.remove('active');document.getElementById(steps[i-1]).classList.add('done');}document.getElementById(steps[i]).classList.add('active');}
+
+  const budget=parseFloat(document.getElementById('budget').value)||null;
+  const ticket=parseFloat(document.getElementById('ticket').value)||null;
+  const ctx=document.getElementById('ctx').value.trim();
+
+  // For video: send hook frames + key frames (max 8 to stay under token limit)
+  let sendImgs=imgs;
+  if(isVideo && imgs.length>8){
+    const hookFrames=imgs.filter(f=>f.isHook).slice(0,4);
+    const otherFrames=imgs.filter(f=>!f.isHook);
+    const step=Math.ceil(otherFrames.length/4);
+    const keyFrames=otherFrames.filter((_,i)=>i%step===0).slice(0,4);
+    sendImgs=[...hookFrames,...keyFrames];
+  }
+
+  const imgBlocks=sendImgs.map((img,i)=>[
+    {type:'image',source:{type:'base64',media_type:img.mime,data:img.b64}},
+    {type:'text',text:isVideo?`[Frame ${i+1}: ${img.label}]`:`[Imagen ${i+1}]`}
+  ]).flat();
+
+  const BM={
+    mensajes:{ctr:'1.0-2.5%',cpc:'$0.20-0.60',cpm:'$5-15',cpa:'$0.50-2.00',cmsg:'$0.10-0.50',roas:'N/A',eng:'2-5%',freq:'<3.0x'},
+    ventas:{ctr:'0.8-2.0%',cpc:'$0.50-2.00',cpm:'$8-25',cpa:'$5-30',roas:'2.5x-6x',cmsg:'N/A',eng:'1.5-4%',freq:'<3.5x'},
+    trafico:{ctr:'1.5-3.0%',cpc:'$0.30-0.80',cpm:'$5-18',cpa:'$0.30-1.00',roas:'N/A',cmsg:'N/A',eng:'1-3%',freq:'<4.0x'},
+    interaccion:{ctr:'2.0-4.0%',cpc:'$0.10-0.30',cpm:'$3-10',cpa:'$0.05-0.20',roas:'N/A',cmsg:'N/A',eng:'4-10%',freq:'<5.0x'}
+  };
+  const b=BM[C];
+
+  const videoPromptExtra = isVideo ? `
+ANÁLISIS DE VIDEO REQUERIDO:
+- Duración total: ${videoMeta.durationStr} (${videoDuration.toFixed(1)} segundos)
+- Frames analizados: ${sendImgs.length} frames clave
+- Evalúa: hook de los primeros 3 segundos, retención estimada por segundo, puntos de abandono, ritmo visual, transiciones, subtítulos/texto en pantalla
+
+MÉTRICAS ESPECÍFICAS DE VIDEO a predecir:
+- ThruPlay Rate (% que ven >15s): depende del hook y ritmo
+- Video Watch Rate 25%/50%/75%/100%: curva de retención estimada  
+- Segundos promedio vistos: basado en calidad del hook y contenido
+- Hook Score (0-100): calidad de los primeros 3 segundos
+- Engagement de video: comentarios, shares estimados vs views
+- Costo por ThruPlay estimado
+` : '';
+
+  const prompt=`Eres el Ingeniero de Anuncios más avanzado de LATAM. Auditas creativos de Meta Ads con frameworks GEM y Andrómeda 2025.
+${videoPromptExtra}
+CONFIGURACIÓN:
+- Tipo: ${T}${isVideo?' (VIDEO - '+videoMeta.durationStr+')':T==='carrusel'?' ('+imgs.length+' tarjetas)':''}
+- Objetivo: ${C}
+- Presupuesto: ${budget?'$'+budget+'/día':'No especificado'}
+- Precio producto: ${ticket?'$'+ticket:'No especificado'}
+- Contexto: ${ctx||'No proporcionado'}
+
+BENCHMARKS META ADS 2025 PARA ${C.toUpperCase()}:
+CTR: ${b.ctr} | CPC: ${b.cpc} | CPM: ${b.cpm} | CPA: ${b.cpa} | ROAS: ${b.roas} | Engagement: ${b.eng} | Frecuencia: ${b.freq}
+
+INSTRUCCIONES:
+1. Analiza VISUALMENTE cada frame/imagen
+2. Scores VARIABLES 10-95 según calidad REAL observada
+3. Para video: evalúa la curva de retención segundo a segundo
+4. Predice métricas REALISTAS — si el creativo es débil, predice métricas malas
+5. Sé MUY específico sobre lo que ves en cada frame
+
+Responde SOLO JSON válido sin markdown:
+{"score":72,"grade":"B","title":"título específico","verdict":"2-3 oraciones sobre lo observado y rendimiento esperado.","tags":[{"text":"tag","type":"pass"}],"gemCriteria":[{"name":"Hook ${isVideo?'Visual/Auditivo':'Visual'} (3s)","score":0,"detail":""},{"name":"Claridad del Mensaje","score":0,"detail":""},{"name":"Call-to-Action","score":0,"detail":""},{"name":"Propuesta de Valor","score":0,"detail":""},{"name":"Urgencia y Escasez","score":0,"detail":""},{"name":"Prueba Social","score":0,"detail":""},{"name":"Relevancia para ${C}","score":0,"detail":""},{"name":"${isVideo?'Ritmo y Retención':'Potencial de Escala'}","score":0,"detail":""}],"androCriteria":[{"name":"Calidad ${isVideo?'Visual/Producción':'Visual/Producción'}","score":0,"detail":""},{"name":"Coherencia de Marca","score":0,"detail":""},{"name":"${isVideo?'Narrativa y Ritmo':'Composición y Jerarquía'}","score":0,"detail":""},{"name":"Impacto Emocional","score":0,"detail":""},{"name":"${isVideo?'Subtítulos/Texto en pantalla':'Regla 20% Texto'}","score":0,"detail":""},{"name":"Velocidad del Mensaje","score":0,"detail":""},{"name":"Adaptación al Formato Meta","score":0,"detail":""},{"name":"Autenticidad","score":0,"detail":""}],"predictedMetrics":[{"label":"CTR Predicho","value":"X.X%","benchmark":"${b.ctr}","status":"warn","detail":""},{"label":"CPC Estimado","value":"$X.XX","benchmark":"${b.cpc}","status":"warn","detail":""},{"label":"CPM Estimado","value":"$X.XX","benchmark":"${b.cpm}","status":"warn","detail":""},{"label":"CPA Estimado","value":"$X.XX","benchmark":"${b.cpa}","status":"warn","detail":""},{"label":"ROAS Predicho","value":"${C==='ventas'?'X.Xx':'N/A'}","benchmark":"${b.roas}","status":"${C==='ventas'?'warn':'na'}","detail":""},{"label":"ROI Estimado","value":"XXX%","benchmark":"> 200%","status":"warn","detail":""},{"label":"${isVideo?'ThruPlay Rate':'Costo/Mensaje'}","value":"${isVideo?'XX%':C==='mensajes'?'$X.XX':'N/A'}","benchmark":"${isVideo?'> 15%':b.cmsg||'N/A'}","status":"warn","detail":""},{"label":"Engagement Rate","value":"X.X%","benchmark":"${b.eng}","status":"warn","detail":""},{"label":"${isVideo?'Segundos Promedio Vistos':'Frecuencia Óptima'}","value":"${isVideo?'XXs':'X.Xx'}","benchmark":"${isVideo?videoDuration.toFixed(0)+'s total':b.freq}","status":"${isVideo?'warn':'good'}","detail":""},{"label":"${isVideo?'Retención a 3s':'Alcance Diario Est.'}","value":"${isVideo?'XX%':budget?Math.round(budget/0.008).toLocaleString():'N/A'}","benchmark":"${isVideo?'> 70%':'Con tu presupuesto'}","status":"warn","detail":""},{"label":"${isVideo?'Retención al 50%':'Impresiones Diarias'}","value":"${isVideo?'XX%':budget?Math.round(budget/0.007).toLocaleString():'N/A'}","benchmark":"${isVideo?'> 40%':'Con tu presupuesto'}","status":"warn","detail":""},{"label":"${isVideo?'Costo por ThruPlay':'Tasa de Conversión'}","value":"${isVideo?'$X.XX':C==='ventas'?'X.XX%':C==='mensajes'?'X.XX%':'X.XX%'}","benchmark":"${isVideo?'< $0.05':C==='ventas'?'1-3%':C==='mensajes'?'5-15%':'0.5-2%'}","status":"warn","detail":""}],"recommendations":[{"type":"critical","icon":"🚨","text":""},{"type":"critical","icon":"🚨","text":""},{"type":"warning","icon":"⚠️","text":""},{"type":"warning","icon":"⚠️","text":""},{"type":"success","icon":"✅","text":""}],"fullAnalysis":"<h4>${isVideo?'Análisis Frame por Frame':'Auditoría Visual Detallada'}</h4><p></p>${isVideo?'<h4>Curva de Retención Estimada</h4><p>Análisis segundo a segundo de la retención esperada basado en los frames.</p>':''}<h4>Justificación de Predicciones</h4><p></p><h4>Framework GEM</h4><ul><li><strong>Growth:</strong></li><li><strong>Engagement:</strong></li><li><strong>Monetization:</strong></li></ul><h4>Metodología Andrómeda</h4><p></p><h4>Causa Raíz del Rendimiento Esperado</h4><p></p>","scenarios":{"actual":{"label":"RENDIMIENTO ACTUAL ESTIMADO","ctr":"","cpc":"","cpa":"","roas":"${C==='ventas'?'':'N/A'}","cmsg":"${C==='mensajes'?'':'N/A'}","roi":"","eng":""},"optimized":{"label":"CON OPTIMIZACIONES APLICADAS","ctr":"","cpc":"","cpa":"","roas":"${C==='ventas'?'':'N/A'}","cmsg":"${C==='mensajes'?'':'N/A'}","roi":"","eng":""},"maximum":{"label":"POTENCIAL MÁXIMO","ctr":"","cpc":"","cpa":"","roas":"${C==='ventas'?'':'N/A'}","cmsg":"${C==='mensajes'?'':'N/A'}","roi":"","eng":""}},"actionPlan":[{"week":"SEMANA 1","action":"","impact":""},{"week":"SEMANA 2","action":"","impact":""},{"week":"SEMANA 3","action":"","impact":""},{"week":"SEMANA 4","action":"","impact":""}],"financialImpact":[{"label":"CTR Mejorado","value":"","desc":""},{"label":"Ahorro en CPC","value":"","desc":""},{"label":"${C==='ventas'?'ROAS Proyectado':C==='mensajes'?'Mensajes/día':'Conversiones/día'}","value":"","desc":""},{"label":"${ticket?'Revenue Mensual':'Costo/Conversión'}","value":"","desc":""},{"label":"Reducción CPA","value":"","desc":""},{"label":"ROI Proyectado","value":"","desc":""}]}
+
+Rellena todos los valores con datos reales basados en lo que ves. Grade: S(90+), A(75-89), B(60-74), C(45-59), D(<45).`;
+
+  try{
+    const body={model:'claude-sonnet-4-20250514',max_tokens:8000,messages:[{role:'user',content:[...imgBlocks,{type:'text',text:prompt}]}]};
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});
+    if(!resp.ok){const e=await resp.json().catch(()=>({}));throw new Error(e.error?.message||'Error '+resp.status);}
+    const data=await resp.json();
+    const txt=(data.content||[]).map(x=>x.text||'').join('');
+    let result;
+    try{const c=txt.replace(/```json\n?|```\n?/g,'').trim();result=JSON.parse(c.substring(c.indexOf('{'),c.lastIndexOf('}')+1));}
+    catch(e){throw new Error('Error procesando respuesta. Intenta de nuevo.');}
+    usedCount++;localStorage.setItem('adra_used',usedCount);updateCounter();
+    document.getElementById(steps[6]).classList.add('done');
+    await new Promise(r=>setTimeout(r,300));
+    document.getElementById('load').classList.remove('on');
+    showResults(result,sendImgs,isVideo,videoMeta);
+    btn.disabled=usedCount>=MAX_FREE;
+  }catch(e){
+    document.getElementById('load').classList.remove('on');btn.disabled=false;
+    showErr(e.message);
+  }
+}
+
+  const btn=document.getElementById('abtn');btn.disabled=true;
+  document.getElementById('load').classList.add('on');
+  document.getElementById('res').classList.remove('on');
+  const steps=['s1','s2','s3','s4','s5','s6','s7'];
+  for(let i=0;i<7;i++){await new Promise(r=>setTimeout(r,450));if(i>0){document.getElementById(steps[i-1]).classList.remove('active');document.getElementById(steps[i-1]).classList.add('done');}document.getElementById(steps[i]).classList.add('active');}
+
+  const budget=parseFloat(document.getElementById('budget').value)||null;
+  const ticket=parseFloat(document.getElementById('ticket').value)||null;
+  const ctx=document.getElementById('ctx').value.trim();
+  const imgBlocks=imgs.map(img=>({type:'image',source:{type:'base64',media_type:img.mime,data:img.b64}}));
+
+  const BM={
+    mensajes:{ctr:'1.0-2.5%',cpc:'$0.20-0.60',cpm:'$5-15',cpa:'$0.50-2.00',cmsg:'$0.10-0.50',roas:'N/A',eng:'2-5%',freq:'<3.0x'},
+    ventas:{ctr:'0.8-2.0%',cpc:'$0.50-2.00',cpm:'$8-25',cpa:'$5-30',roas:'2.5x-6x',cmsg:'N/A',eng:'1.5-4%',freq:'<3.5x'},
+    trafico:{ctr:'1.5-3.0%',cpc:'$0.30-0.80',cpm:'$5-18',cpa:'$0.30-1.00',roas:'N/A',cmsg:'N/A',eng:'1-3%',freq:'<4.0x'},
+    interaccion:{ctr:'2.0-4.0%',cpc:'$0.10-0.30',cpm:'$3-10',cpa:'$0.05-0.20',roas:'N/A',cmsg:'N/A',eng:'4-10%',freq:'<5.0x'}
+  };
+  const b=BM[C];
+
+  const prompt=`Eres el Ingeniero de Anuncios más avanzado de LATAM. Usas visión IA para auditar creativos de Meta Ads con los frameworks GEM y Andrómeda 2025.
+
+CONFIGURACIÓN:
+- Tipo: ${T}${T==='carrusel'?' ('+imgs.length+' tarjetas)':''}
+- Objetivo: ${C}
+- Presupuesto diario: ${budget?'$'+budget:'No especificado'}
+- Precio del producto: ${ticket?'$'+ticket:'No especificado'}
+- Contexto: ${ctx||'No proporcionado'}
+
+BENCHMARKS META ADS 2025 PARA ${C.toUpperCase()}:
+CTR: ${b.ctr} | CPC: ${b.cpc} | CPM: ${b.cpm} | CPA: ${b.cpa} | ROAS: ${b.roas} | Engagement: ${b.eng} | Frecuencia: ${b.freq} | Costo/msg: ${b.cmsg||'N/A'}
+
+INSTRUCCIONES:
+1. Analiza VISUALMENTE la imagen — describe exactamente lo que ves
+2. Scores VARIABLES 10-95 según calidad REAL observada. Si el hook es débil: 20-40. Si es excelente: 80-95.
+3. Predice métricas REALISTAS basadas en la calidad visual del creativo
+4. Si el creativo es malo, predice métricas malas (CTR bajo, CPC alto)
+5. Sé específico: menciona colores, textos, elementos concretos
+
+Responde SOLO JSON válido sin markdown:
+{"score":72,"grade":"B","title":"título específico","verdict":"2-3 oraciones sobre lo que ves y el rendimiento esperado.","tags":[{"text":"tag","type":"pass"}],"gemCriteria":[{"name":"Hook Visual (3s)","score":0,"detail":""},{"name":"Claridad del Mensaje","score":0,"detail":""},{"name":"Call-to-Action","score":0,"detail":""},{"name":"Propuesta de Valor","score":0,"detail":""},{"name":"Urgencia y Escasez","score":0,"detail":""},{"name":"Prueba Social","score":0,"detail":""},{"name":"Relevancia para ${C}","score":0,"detail":""},{"name":"Potencial de Escala","score":0,"detail":""}],"androCriteria":[{"name":"Calidad Visual/Producción","score":0,"detail":""},{"name":"Coherencia de Marca","score":0,"detail":""},{"name":"Composición y Jerarquía","score":0,"detail":""},{"name":"Impacto Emocional","score":0,"detail":""},{"name":"Regla 20% Texto","score":0,"detail":""},{"name":"Velocidad del Mensaje","score":0,"detail":""},{"name":"Adaptación al Formato Meta","score":0,"detail":""},{"name":"Autenticidad","score":0,"detail":""}],"predictedMetrics":[{"label":"CTR Predicho","value":"X.X%","benchmark":"${b.ctr}","status":"warn","detail":""},{"label":"CPC Estimado","value":"$X.XX","benchmark":"${b.cpc}","status":"warn","detail":""},{"label":"CPM Estimado","value":"$X.XX","benchmark":"${b.cpm}","status":"warn","detail":""},{"label":"CPA Estimado","value":"$X.XX","benchmark":"${b.cpa}","status":"warn","detail":""},{"label":"ROAS Predicho","value":"${C==='ventas'?'X.Xx':'N/A'}","benchmark":"${b.roas}","status":"${C==='ventas'?'warn':'na'}","detail":""},{"label":"ROI Estimado","value":"XXX%","benchmark":"> 200%","status":"warn","detail":""},{"label":"Costo/Mensaje","value":"${C==='mensajes'?'$X.XX':'N/A'}","benchmark":"${b.cmsg}","status":"${C==='mensajes'?'warn':'na'}","detail":""},{"label":"Engagement Rate","value":"X.X%","benchmark":"${b.eng}","status":"warn","detail":""},{"label":"Frecuencia Óptima","value":"X.Xx","benchmark":"${b.freq}","status":"good","detail":""},{"label":"Alcance Diario Est.","value":"${budget?Math.round(budget/0.008).toLocaleString():'N/A'}","benchmark":"Con tu presupuesto","status":"${budget?'warn':'na'}","detail":""},{"label":"Impresiones Diarias","value":"${budget?Math.round(budget/0.007).toLocaleString():'N/A'}","benchmark":"Con tu presupuesto","status":"${budget?'warn':'na'}","detail":""},{"label":"Tasa de Conversión","value":"X.XX%","benchmark":"${C==='ventas'?'1-3%':C==='mensajes'?'5-15%':'0.5-2%'}","status":"warn","detail":""}],"recommendations":[{"type":"critical","icon":"🚨","text":""},{"type":"critical","icon":"🚨","text":""},{"type":"warning","icon":"⚠️","text":""},{"type":"warning","icon":"⚠️","text":""},{"type":"success","icon":"✅","text":""}],"fullAnalysis":"<h4>Auditoría Visual Detallada</h4><p></p><h4>Justificación de Predicciones</h4><p></p><h4>Framework GEM</h4><ul><li><strong>Growth:</strong></li><li><strong>Engagement:</strong></li><li><strong>Monetization:</strong></li></ul><h4>Metodología Andrómeda</h4><p></p><h4>Causa Raíz del Rendimiento Esperado</h4><p></p>","scenarios":{"actual":{"label":"RENDIMIENTO ACTUAL ESTIMADO","ctr":"","cpc":"","cpa":"","roas":"${C==='ventas'?'':'N/A'}","cmsg":"${C==='mensajes'?'':'N/A'}","roi":"","eng":""},"optimized":{"label":"CON OPTIMIZACIONES APLICADAS","ctr":"","cpc":"","cpa":"","roas":"${C==='ventas'?'':'N/A'}","cmsg":"${C==='mensajes'?'':'N/A'}","roi":"","eng":""},"maximum":{"label":"POTENCIAL MÁXIMO DEL CREATIVO","ctr":"","cpc":"","cpa":"","roas":"${C==='ventas'?'':'N/A'}","cmsg":"${C==='mensajes'?'':'N/A'}","roi":"","eng":""}},"actionPlan":[{"week":"SEMANA 1","action":"","impact":""},{"week":"SEMANA 2","action":"","impact":""},{"week":"SEMANA 3","action":"","impact":""},{"week":"SEMANA 4","action":"","impact":""}],"financialImpact":[{"label":"CTR Mejorado","value":"","desc":""},{"label":"Ahorro en CPC","value":"","desc":""},{"label":"${C==='ventas'?'ROAS Proyectado':C==='mensajes'?'Mensajes/día':'Conversiones/día'}","value":"","desc":""},{"label":"${ticket?'Revenue Mensual':'Costo/Conversión'}","value":"","desc":""},{"label":"Reducción CPA","value":"","desc":""},{"label":"ROI Proyectado","value":"","desc":""}]}
+
+Rellena todos los valores con datos reales basados en lo que ves. Grade: S(90+), A(75-89), B(60-74), C(45-59), D(<45).`;
+
+  try{
+    const body={model:'claude-sonnet-4-20250514',max_tokens:8000,messages:[{role:'user',content:[...imgBlocks,{type:'text',text:prompt}]}]};
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify(body)});
+    if(!resp.ok){const e=await resp.json().catch(()=>({}));throw new Error(e.error?.message||'Error '+resp.status);}
+    const data=await resp.json();
+    const txt=(data.content||[]).map(x=>x.text||'').join('');
+    let result;
+    try{const c=txt.replace(/```json\n?|```\n?/g,'').trim();result=JSON.parse(c.substring(c.indexOf('{'),c.lastIndexOf('}')+1));}
+    catch(e){throw new Error('Error procesando respuesta. Intenta de nuevo.');}
+
+    // Count usage
+    usedCount++;
+    localStorage.setItem('adra_used',usedCount);
+    updateCounter();
+
+    document.getElementById(steps[6]).classList.add('done');
+    await new Promise(r=>setTimeout(r,300));
+    document.getElementById('load').classList.remove('on');
+    showResults(result,imgs);
+    btn.disabled=usedCount>=MAX_FREE;
+  }catch(e){
+    document.getElementById('load').classList.remove('on');
+    btn.disabled=false;
+    showErr(e.message);
+  }
+}
+
+function gc(g){return g==='S'?'var(--ok)':g==='A'?'var(--blue)':g==='B'?'var(--gold)':g==='C'?'var(--pink2)':'var(--er)';}
+
+function showResults(d,imgs,isVideo,videoMeta){
+  const th=document.getElementById('rthumbs');th.innerHTML='';
+  imgs.forEach(img=>{const dv=document.createElement('div');dv.className='rthumb';const i=document.createElement('img');i.src=img.url;dv.appendChild(i);th.appendChild(dv);});
+  const sc=Math.min(100,Math.max(0,d.score||70)),gr=d.grade||'B';
+  document.getElementById('snum').textContent=sc;document.getElementById('snum').style.color=gc(gr);
+  document.getElementById('stitle').textContent=d.title||'';document.getElementById('sverdict').textContent=d.verdict||'';
+  const gel=document.getElementById('sgrade');gel.textContent='GRADE '+gr;gel.className='sgrade g'+gr;
+  setTimeout(()=>{document.getElementById('sarc').style.strokeDashoffset=459-(459*sc/100);},100);
+  const tg=document.getElementById('stags');tg.innerHTML='';
+  (d.tags||[]).forEach(t=>{const s=document.createElement('span');s.className='stag '+(t.type==='pass'?'tok':t.type==='warn'?'twa':'ter');s.textContent=t.text;tg.appendChild(s);});
+  const mr=document.getElementById('mrg');mr.innerHTML='';
+  (d.predictedMetrics||[]).forEach(m=>{
+    if(m.value==='N/A'||m.status==='na')return;
+    mr.innerHTML+=`<div class="mrc ${m.status||'pred'}"><div class="mrcl">${m.label}</div><div class="mrcv">${m.value}</div><div class="mrcb">Bench: ${m.benchmark}</div><div class="mrcs">🤖 Predicción IA</div></div>`;
+  });
+  const gem=document.getElementById('gemcrits');gem.innerHTML='';
+  (d.gemCriteria||[]).forEach(c=>{const col=c.score>=75?'var(--ok)':c.score>=50?'var(--gold)':'var(--er)';gem.innerHTML+=`<div class="crow"><div class="crow-h"><span class="crow-n">${c.name}</span><span class="crow-s" style="color:${col}">${c.score}/100</span></div><div class="crow-b"><div class="crow-f" style="width:${c.score}%;background:${col}"></div></div><div class="crow-d">${c.detail||''}</div></div>`;});
+  const an=document.getElementById('androcrits');an.innerHTML='';
+  (d.androCriteria||[]).forEach(c=>{const col=c.score>=75?'var(--blue)':c.score>=50?'var(--gold)':'var(--er)';an.innerHTML+=`<div class="crow"><div class="crow-h"><span class="crow-n">${c.name}</span><span class="crow-s" style="color:${col}">${c.score}/100</span></div><div class="crow-b"><div class="crow-f" style="width:${c.score}%;background:${col}"></div></div><div class="crow-d">${c.detail||''}</div></div>`;});
+  const rc=document.getElementById('rlist');rc.innerHTML='';
+  (d.recommendations||[]).forEach(r=>{rc.innerHTML+=`<div class="reco ${r.type}"><span class="reco-ico">${r.icon}</span><span>${r.text}</span></div>`;});
+  document.getElementById('acard').innerHTML=d.fullAnalysis||'';
+  const sc_el=document.getElementById('scenarios');sc_el.innerHTML='';
+  const scDefs=[{key:'actual',cls:'sc-actual',icon:'📊'},{key:'optimized',cls:'sc-opt',icon:'✅'},{key:'maximum',cls:'sc-max',icon:'🚀'}];
+  scDefs.forEach(({key,cls,icon})=>{
+    const s=(d.scenarios||{})[key]||{};
+    const fields=[['CTR',s.ctr],['CPC',s.cpc],['CPA',s.cpa],['ROAS',s.roas],['Costo/Msg',s.cmsg],['ROI',s.roi],['Engagement',s.eng]].filter(([k,v])=>v&&v!=='N/A');
+    sc_el.innerHTML+=`<div class="scenario ${cls}"><div class="sc-label"><div class="sc-dot"></div>${icon} ${s.label||key}</div><div class="sc-rows">${fields.map(([k,v])=>`<div class="sc-row"><span class="sc-key">${k}</span><span class="sc-val">${v}</span></div>`).join('')}</div></div>`;
+  });
+  const pg=document.getElementById('planGrid');pg.innerHTML='';
+  (d.actionPlan||[]).forEach(p=>{pg.innerHTML+=`<div class="plan-item"><div class="plan-week">${p.week||''}</div><div class="plan-action">${p.action||''}</div><div class="plan-impact">${p.impact||''}</div></div>`;});
+  const rg=document.getElementById('roiGrid');rg.innerHTML='';
+  (d.financialImpact||[]).forEach(r=>{rg.innerHTML+=`<div class="roi-item"><div class="roi-label">${r.label||''}</div><div class="roi-value">${r.value||'—'}</div><div class="roi-desc">${r.desc||''}</div></div>`;});
+  document.getElementById('res').classList.add('on');
+  if(usedCount>=MAX_FREE)document.getElementById('upgradeBanner').style.display='block';
+  setTimeout(()=>document.getElementById('res').scrollIntoView({behavior:'smooth'}),100);
+}
+
+function copyR(){
+  const t='Ingeniero de Anuncios — Reporte de Auditoría\nPuntaje: '+document.getElementById('snum').textContent+'/100 | '+document.getElementById('sgrade').textContent+'\n'+document.getElementById('stitle').textContent+'\n\n'+document.getElementById('sverdict').textContent;
+  navigator.clipboard.writeText(t).then(()=>alert('✓ Copiado al portapapeles')).catch(()=>alert('Usa Ctrl+C'));
+}
+function doReset(){
+  mainImg=null;carImgs=[null,null,null,null];videoFrames=[];videoDuration=0;videoFile=null;
+  document.getElementById('res').classList.remove('on');
+  document.getElementById('fileIn').style.display='block';
+  document.getElementById('prevbox').style.display='none';
+  document.getElementById('previmg').src='';
+  document.getElementById('videoIn').style.display='block';
+  document.getElementById('videoprevbox').style.display='none';
+  document.getElementById('frameStatus').style.display='none';
+  document.getElementById('videoStats').style.display='none';
+  document.getElementById('frameThumbs').innerHTML='';
+  document.getElementById('ctx').value='';
+  document.getElementById('budget').value='';
+  document.getElementById('ticket').value='';
+  ['s1','s2','s3','s4','s5','s6','s7'].forEach(id=>{document.getElementById(id).classList.remove('active','done');});
+  hideErr();window.scrollTo({top:0,behavior:'smooth'});
+}
 </script>
-
 </body>
 </html>
